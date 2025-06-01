@@ -1,37 +1,53 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { PaginationBar } from '../components/pagination-bar'
 import { StoryItem } from '../components/story-item'
 import { LoadingSkeleton, ErrorMessage } from '../components/loading'
 import { useStories } from '../hooks/use-stories'
 import { StoryFilters } from '../components/story-filters'
 
-export default function Home() {
+function HomeClient() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [upvotedPosts, setUpvotedPosts] = useState<Set<number>>(new Set())
   const [hiddenPosts, setHiddenPosts] = useState<Set<number>>(new Set())
   const [savedPosts, setSavedPosts] = useState<Set<number>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [isMobile, setIsMobile] = useState(false)
-  const [storyType, setStoryType] = useState<'top' | 'new' | 'best' | 'job' | 'ask' | 'show'>('top')
+
+  const getInitialStoryType = () => {
+    if (searchParams) {
+      const typeFromUrl = searchParams.get('type');
+      if (typeFromUrl && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(typeFromUrl)) {
+        return typeFromUrl as 'top' | 'new' | 'best' | 'job' | 'ask' | 'show';
+      }
+    }
+    if (typeof window !== 'undefined') {
+      const savedStoryType = localStorage.getItem('hn-story-type');
+      if (savedStoryType && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(savedStoryType)) {
+        return savedStoryType as 'top' | 'new' | 'best' | 'job' | 'ask' | 'show';
+      }
+    }
+    return 'top';
+  };
+
+  const [storyType, setStoryType] = useState<'top' | 'new' | 'best' | 'job' | 'ask' | 'show'>('top');
   
-  // Add states for filters and customization options
+  // Effect to set initial story type once searchParams is available
+  useEffect(() => {
+    setStoryType(getInitialStoryType());
+  }, [searchParams]);
+
   const [sortBy, setSortBy] = useState<'default' | 'points' | 'comments' | 'newest' | 'oldest'>('default')
   const [domainFilter, setDomainFilter] = useState('')
   const [keywordFilter, setKeywordFilter] = useState('')
   const [viewMode, setViewMode] = useState<'normal' | 'compact' | 'card'>('normal')
   const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal')
   
-  // Load saved preferences from localStorage
   useEffect(() => {
-    // Load saved story type preference
-    const savedStoryType = localStorage.getItem('hn-story-type')
-    if (savedStoryType && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(savedStoryType)) {
-      setStoryType(savedStoryType as any)
-    }
-    
-    // Load saved items per page preference
     const savedItemsPerPage = localStorage.getItem('hn-items-per-page')
     if (savedItemsPerPage) {
       const parsedValue = parseInt(savedItemsPerPage, 10)
@@ -39,24 +55,18 @@ export default function Home() {
         setItemsPerPage(parsedValue)
       }
     }
-    
-    // Load saved filter preferences
     const savedSortBy = localStorage.getItem('hn-sort-preference')
     if (savedSortBy && ['default', 'points', 'comments', 'newest', 'oldest'].includes(savedSortBy)) {
       setSortBy(savedSortBy as any)
     }
-    
     const savedViewMode = localStorage.getItem('hn-view-mode')
     if (savedViewMode && ['normal', 'compact', 'card'].includes(savedViewMode)) {
       setViewMode(savedViewMode as any)
     }
-    
     const savedFontSize = localStorage.getItem('hn-font-size')
     if (savedFontSize && ['small', 'normal', 'large'].includes(savedFontSize)) {
       setFontSize(savedFontSize as any)
     }
-    
-    // Load saved posts
     try {
       const savedPostsString = localStorage.getItem('hn-saved-posts')
       if (savedPostsString) {
@@ -68,8 +78,6 @@ export default function Home() {
     } catch (e) {
       console.error('Error loading saved posts', e)
     }
-    
-    // Load hidden posts
     try {
       const hiddenPostsString = localStorage.getItem('hn-hidden-posts')
       if (hiddenPostsString) {
@@ -81,8 +89,6 @@ export default function Home() {
     } catch (e) {
       console.error('Error loading hidden posts', e)
     }
-    
-    // Load upvoted posts
     try {
       const upvotedPostsString = localStorage.getItem('hn-upvoted-posts')
       if (upvotedPostsString) {
@@ -95,6 +101,29 @@ export default function Home() {
       console.error('Error loading upvoted posts', e)
     }
   }, [])
+
+  // Effect to update storyType from URL search parameter if it changes
+  useEffect(() => {
+    if (searchParams) {
+      const typeFromUrl = searchParams.get('type');
+      if (typeFromUrl && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(typeFromUrl)) {
+        if (storyType !== typeFromUrl) {
+          setStoryType(typeFromUrl as 'top' | 'new' | 'best' | 'job' | 'ask' | 'show');
+          setCurrentPage(1); // Reset to first page
+          localStorage.setItem('hn-story-type', typeFromUrl);
+        }
+      }
+      // If typeFromUrl is null/empty and storyType is not the default, reset to default or localStorage
+      else if (!typeFromUrl && storyType !== (localStorage.getItem('hn-story-type') || 'top')) {
+          const savedStoryType = localStorage.getItem('hn-story-type');
+          const defaultType = (savedStoryType && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(savedStoryType)) ? savedStoryType as 'top' | 'new' | 'best' | 'job' | 'ask' | 'show' : 'top';
+          if (storyType !== defaultType) {
+              setStoryType(defaultType);
+              setCurrentPage(1);
+          }
+      }
+    }
+  }, [searchParams, storyType]);
 
   const { 
     stories, 
@@ -112,19 +141,15 @@ export default function Home() {
     filterKeyword: keywordFilter
   })
 
-  // Check if on mobile device
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
     checkIsMobile()
     window.addEventListener('resize', checkIsMobile)
-    
     return () => window.removeEventListener('resize', checkIsMobile)
   }, [])
 
-  // Story type tabs
   const storyTypes = [
     { id: 'top', label: 'Top' },
     { id: 'new', label: 'New' },
@@ -142,10 +167,7 @@ export default function Home() {
       } else {
         newSet.add(postId)
       }
-      
-      // Save to localStorage
       localStorage.setItem('hn-upvoted-posts', JSON.stringify([...newSet]))
-      
       return newSet
     })
   }
@@ -153,10 +175,7 @@ export default function Home() {
   const handleHide = (postId: number) => {
     setHiddenPosts(prev => {
       const newSet = new Set([...prev, postId])
-      
-      // Save to localStorage
       localStorage.setItem('hn-hidden-posts', JSON.stringify([...newSet]))
-      
       return newSet
     })
   }
@@ -169,10 +188,7 @@ export default function Home() {
       } else {
         newSet.add(postId)
       }
-      
-      // Save to localStorage
       localStorage.setItem('hn-saved-posts', JSON.stringify([...newSet]))
-      
       return newSet
     })
   }
@@ -184,15 +200,11 @@ export default function Home() {
   const handleItemsPerPageChange = (newItemsPerPage: number) => {
     setItemsPerPage(newItemsPerPage)
     setCurrentPage(1)
-    // Save preference to localStorage
     localStorage.setItem('hn-items-per-page', newItemsPerPage.toString())
   }
   
   const handleChangeStoryType = (type: 'top' | 'new' | 'best' | 'job' | 'ask' | 'show') => {
-    setStoryType(type)
-    setCurrentPage(1)
-    // Save preference to localStorage
-    localStorage.setItem('hn-story-type', type)
+    router.push(`/?type=${type}`, { scroll: false });
   }
 
   const visibleStories = stories.filter(story => !hiddenPosts.has(story.id))
@@ -200,11 +212,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto">
+      <div id="main-scrollable-content" className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto py-2 md:px-4 md:py-6">
           <main>
-            {/* Story Type Selector */}
             <div className="mb-4 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
               <div className="flex -mb-px min-w-max">
                 {storyTypes.map(type => (
@@ -217,7 +227,6 @@ export default function Home() {
                         : 'text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
                   >
-                    {/* Simplified labels for mobile */}
                     <span className="md:hidden">
                       {type.id === 'ask' ? 'Ask' : type.id === 'show' ? 'Show' : type.label}
                     </span>
@@ -227,7 +236,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Add StoryFilters Component */}
             <StoryFilters
               onSortChange={setSortBy}
               onDomainFilterChange={setDomainFilter}
@@ -241,20 +249,13 @@ export default function Home() {
               fontSize={fontSize}
             />
 
-            {/* Error State */}
             {error && <ErrorMessage message={error.message} />}
-            
-            {/* Loading State */}
             {isLoading && <LoadingSkeleton />}
-            
-            {/* Stories List */}
             {!isLoading && !error && visibleStories.length === 0 && (
               <div className="text-center py-10">
                 <p className="text-gray-500 dark:text-gray-400">No stories available</p>
               </div>
             )}
-            
-            {/* Stories */}
             {!isLoading && !error && visibleStories.length > 0 && (
               <div 
                 className={`
@@ -262,7 +263,7 @@ export default function Home() {
                   ${viewMode === 'compact' ? 'space-y-0 divide-y divide-gray-100 dark:divide-gray-800' : ''}
                   ${viewMode === 'card' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6' : ''}
                 `}
-                key={`stories-${storyType}-${currentPage}`} // Force remount on type or page change for animation
+                key={`stories-${storyType}-${currentPage}`}
               >
                 {visibleStories.map((story, index) => (
                   <StoryItem
@@ -285,7 +286,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Fixed Pagination Bar at Bottom */}
       <PaginationBar
         currentPage={currentPage}
         totalPages={totalPages}
@@ -296,4 +296,12 @@ export default function Home() {
       />
     </div>
   )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <HomeClient />
+    </Suspense>
+  );
 }

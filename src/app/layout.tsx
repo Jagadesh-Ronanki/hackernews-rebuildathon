@@ -19,8 +19,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hacker News",
-  description: "A modern take on Hacker News",
+  title: {
+    default: "Hacker News",
+    template: "%s - Hacker News",
+  },
+  description: "Hacker News clone built with Next.js and TypeScript.",
+  icons: {
+    icon: "/assets/logo.png",
+  },
 };
 
 export default function RootLayout({

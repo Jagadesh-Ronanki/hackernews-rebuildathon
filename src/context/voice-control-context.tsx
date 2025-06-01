@@ -76,11 +76,48 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
           router.push('/about')
           break
         case 'scroll:top':
-          window.scrollTo({ top: 0, behavior: 'smooth' })
+          {
+            const mainScrollable = document.getElementById('main-scrollable-content');
+            if (mainScrollable) {
+              mainScrollable.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }
           break
         case 'scroll:bottom':
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+          {
+            const mainScrollable = document.getElementById('main-scrollable-content');
+            if (mainScrollable) {
+              mainScrollable.scrollTo({ top: mainScrollable.scrollHeight, behavior: 'smooth' });
+            }
+          }
           break
+        case 'navigate:back':
+          router.back()
+          break
+        case 'navigate:forward':
+          router.forward()
+          break
+        case 'page:refresh':
+          window.location.reload()
+          break
+        case 'navigate:storytype:top':
+          router.push('/?type=top')
+          break
+        case 'navigate:storytype:new':
+          router.push('/?type=new')
+          break
+        case 'navigate:storytype:best':
+          router.push('/?type=best')
+          break
+        case 'navigate:storytype:ask':
+          router.push('/?type=ask')
+          break
+        case 'navigate:storytype:show':
+          router.push('/?type=show')
+          break
+        case 'navigate:storytype:job':
+          router.push('/?type=job')
+          break;
       }
     } catch (error) {
       console.error('Error processing command:', error)

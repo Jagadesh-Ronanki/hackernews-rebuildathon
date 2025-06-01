@@ -31,6 +31,15 @@ export async function POST(request: Request) {
     - navigate:about (go to about page)
     - scroll:top (scroll to top - for commands like "go up", "top", "beginning")
     - scroll:bottom (scroll to bottom - for commands like "go down", "bottom", "end")
+    - navigate:back (go back in history - for commands like "go back", "previous page")
+    - navigate:forward (go forward in history - for commands like "go forward", "next page")
+    - page:refresh (refresh the current page - for commands like "refresh", "reload")
+    - navigate:storytype:top (navigate to top stories - for commands like "show top stories", "go to top")
+    - navigate:storytype:new (navigate to new stories - for commands like "show new stories", "go to new")
+    - navigate:storytype:best (navigate to best stories - for commands like "show best stories", "go to best")
+    - navigate:storytype:ask (navigate to ask hn - for commands like "show ask hn", "go to ask")
+    - navigate:storytype:show (navigate to show hn - for commands like "show show hn", "go to show")
+    - navigate:storytype:job (navigate to jobs - for commands like "show jobs", "go to jobs")
     - none (if no clear action)
     
     ${conversationContext}
