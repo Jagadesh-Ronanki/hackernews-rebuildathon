@@ -81,118 +81,116 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       setFeedback({
         isProcessing: false,
         command,
-        action: data.action,
+        action: data.actions.map((a: any) => a.action).join(', '), // Combine actions for display
         reason: data.reason
       })
       
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      const actionParts = data.action.split(':');
-      const mainAction = actionParts.length > 1 ? `${actionParts[0]}:${actionParts[1]}` : data.action;
-      const subAction = actionParts.length > 2 ? actionParts.slice(2).join(':') : null;
+      for (const actionItem of data.actions) {
+        const currentAction = actionItem.action;
+        const currentValue = actionItem.value;
 
-      switch (data.action) {
-        case 'theme:dark':
-          setTheme('dark')
-          break
-        case 'theme:light':
-          setTheme('light')
-          break
-        case 'navigate:home':
-          router.push('/')
-          break
-        case 'navigate:about':
-          router.push('/about')
-          break
-        case 'scroll:top':
-          {
-            const mainScrollable = document.getElementById('main-scrollable-content');
-            if (mainScrollable) {
-              mainScrollable.scrollTo({ top: 0, behavior: 'smooth' });
+        // Existing switch cases will be adapted to use currentAction and currentValue
+        switch (currentAction) {
+          case 'theme:dark':
+            setTheme('dark')
+            break
+          case 'theme:light':
+            setTheme('light')
+            break
+          case 'navigate:home':
+            router.push('/')
+            break
+          case 'navigate:about':
+            router.push('/about')
+            break
+          case 'scroll:top':
+            {
+              const mainScrollable = document.getElementById('main-scrollable-content');
+              if (mainScrollable) {
+                mainScrollable.scrollTo({ top: 0, behavior: 'smooth' });
+              }
             }
-          }
-          break
-        case 'scroll:bottom':
-          {
-            const mainScrollable = document.getElementById('main-scrollable-content');
-            if (mainScrollable) {
-              mainScrollable.scrollTo({ top: mainScrollable.scrollHeight, behavior: 'smooth' });
+            break
+          case 'scroll:bottom':
+            {
+              const mainScrollable = document.getElementById('main-scrollable-content');
+              if (mainScrollable) {
+                mainScrollable.scrollTo({ top: mainScrollable.scrollHeight, behavior: 'smooth' });
+              }
             }
-          }
-          break
-        case 'navigate:back':
-          router.back()
-          break
-        case 'navigate:forward':
-          router.forward()
-          break
-        case 'page:refresh':
-          window.location.reload()
-          break
-        case 'navigate:storytype:top':
-          router.push('/?type=top')
-          break
-        case 'navigate:storytype:new':
-          router.push('/?type=new')
-          break
-        case 'navigate:storytype:best':
-          router.push('/?type=best')
-          break
-        case 'navigate:storytype:ask':
-          router.push('/?type=ask')
-          break
-        case 'navigate:storytype:show':
-          router.push('/?type=show')
-          break
-        case 'navigate:storytype:job':
-          router.push('/?type=job')
-          break;
+            break
+          case 'navigate:back':
+            router.back()
+            break
+          case 'navigate:forward':
+            router.forward()
+            break
+          case 'page:refresh':
+            window.location.reload()
+            break
+          case 'navigate:storytype':
+            if (currentValue && ['top', 'new', 'best', 'ask', 'show', 'job'].includes(currentValue)) {
+              router.push(`/?type=${currentValue}`)
+            }
+            break;
+          case 'pagination':
+            if (currentValue === 'next') {
+              pageActionsRef.current?.goToNextPage?.();
+            } else if (currentValue === 'prev') {
+              pageActionsRef.current?.goToPrevPage?.();
+            }
+            break;
+          case 'pagination:items':
+            if (typeof currentValue === 'number' && [10, 20, 30, 50].includes(currentValue)) {
+              pageActionsRef.current?.setItemsPerPage?.(currentValue);
+            }
+            break
+          case 'search:keyword':
+            if (typeof currentValue === 'string' && currentValue) {
+              pageActionsRef.current?.searchByKeyword?.(currentValue);
+            }
+            break
+          case 'sort:by':
+            if (currentValue && ['default', 'points', 'comments', 'newest', 'oldest'].includes(currentValue)) {
+              pageActionsRef.current?.sortByPreference?.(currentValue as 'default' | 'points' | 'comments' | 'newest' | 'oldest');
+            }
+            break
+          case 'filter:domain':
+            if (typeof currentValue === 'string' && currentValue) {
+              pageActionsRef.current?.setDomainFilter?.(currentValue);
+            }
+            break
+          case 'filter:domain:clear':
+            pageActionsRef.current?.clearDomainFilter?.();
+            break
+          case 'filter:keyword:clear':
+            pageActionsRef.current?.clearKeywordFilter?.();
+            break
+          case 'viewmode':
+            if (currentValue && ['normal', 'compact', 'card'].includes(currentValue)) {
+              pageActionsRef.current?.setViewMode?.(currentValue as 'normal' | 'compact' | 'card');
+            }
+            break
+          case 'fontsize':
+            if (currentValue && ['small', 'normal', 'large'].includes(currentValue)) {
+              pageActionsRef.current?.setFontSize?.(currentValue as 'small' | 'normal' | 'large');
+            }
+            break
+          case 'filter:clearall':
+            pageActionsRef.current?.clearAllFilters?.();
+            break
+          case 'none':
+          default:
+            // No operation for "none" or unknown actions in a sequence
+            break;
+        }
+        // Add a small delay between actions if needed, e.g., for navigation to complete
+        if (data.actions.length > 1 && actionItem !== data.actions[data.actions.length - 1]) {
+          await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second delay
+        }
       }
-
-      // Handle parameterized actions
-      if (data.action.startsWith('pagination:next')) {
-        pageActionsRef.current?.goToNextPage?.();
-      } else if (data.action.startsWith('pagination:prev')) {
-        pageActionsRef.current?.goToPrevPage?.();
-      } else if (data.action.startsWith('pagination:items:')) {
-        const countStr = data.action.substring('pagination:items:'.length);
-        const count = parseInt(countStr, 10);
-        if (!isNaN(count) && [10, 20, 30, 50].includes(count)) {
-          pageActionsRef.current?.setItemsPerPage?.(count);
-        }
-      } else if (data.action.startsWith('search:keyword:')) {
-        const keyword = data.action.substring('search:keyword:'.length);
-        if (keyword) {
-          pageActionsRef.current?.searchByKeyword?.(keyword);
-        }
-      } else if (data.action.startsWith('sort:by:')) {
-        const sortType = data.action.substring('sort:by:'.length) as 'default' | 'points' | 'comments' | 'newest' | 'oldest';
-        if (['default', 'points', 'comments', 'newest', 'oldest'].includes(sortType)) {
-          pageActionsRef.current?.sortByPreference?.(sortType);
-        }
-      } else if (data.action.startsWith('filter:domain:clear')) {
-        pageActionsRef.current?.clearDomainFilter?.();
-      } else if (data.action.startsWith('filter:domain:')) {
-        const domain = data.action.substring('filter:domain:'.length);
-        if (domain) {
-          pageActionsRef.current?.setDomainFilter?.(domain);
-        }
-      } else if (data.action.startsWith('filter:keyword:clear')) {
-        pageActionsRef.current?.clearKeywordFilter?.();
-      } else if (data.action.startsWith('viewmode:')) {
-        const mode = data.action.substring('viewmode:'.length) as 'normal' | 'compact' | 'card';
-        if (['normal', 'compact', 'card'].includes(mode)) {
-          pageActionsRef.current?.setViewMode?.(mode);
-        }
-      } else if (data.action.startsWith('fontsize:')) {
-        const size = data.action.substring('fontsize:'.length) as 'small' | 'normal' | 'large';
-        if (['small', 'normal', 'large'].includes(size)) {
-          pageActionsRef.current?.setFontSize?.(size);
-        }
-      } else if (data.action.startsWith('filter:clearall')) {
-        pageActionsRef.current?.clearAllFilters?.();
-      }
-
     } catch (error) {
       console.error('Error processing command:', error)
       setFeedback({
