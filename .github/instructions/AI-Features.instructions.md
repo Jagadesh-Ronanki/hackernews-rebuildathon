@@ -26,6 +26,10 @@ We already developed voice commands implemented some features access. Some of th
     { id: 'job', label: 'Jobs' }
   ]
 ```
+[ ] Next Page and Previous Page navigation 
+[ ] Change Per page count (e.g., 10, 20, 30 stories per page)
+[ ] Search functionality to find specific stories
+[ ] Handle Sort Filters (e.g., sort by date, popularity not exactly these). Refer to the `src/components/story-filters.tsx` file for the filters implementation.
 
 Fix the scrolling functionality to work with the new design, ensuring that the chatbot can scroll to the top and bottom of the designated scrollable section.
 

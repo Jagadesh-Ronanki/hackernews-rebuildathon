@@ -5,10 +5,26 @@ import { useTheme } from 'next-themes'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAIFeedback } from './ai-feedback-context'
 
+export interface PageActions {
+  goToNextPage?: () => void;
+  goToPrevPage?: () => void;
+  setItemsPerPage?: (count: number) => void;
+  searchByKeyword?: (keyword: string) => void;
+  sortByPreference?: (sortType: 'default' | 'points' | 'comments' | 'newest' | 'oldest') => void;
+  setDomainFilter?: (domain: string) => void;
+  clearDomainFilter?: () => void;
+  clearKeywordFilter?: () => void;
+  setViewMode?: (mode: 'normal' | 'compact' | 'card') => void;
+  setFontSize?: (size: 'small' | 'normal' | 'large') => void;
+  clearAllFilters?: () => void;
+}
+
 interface VoiceControlContextType {
   isListening: boolean
   setIsListening: (listening: boolean) => void
   isProcessing: boolean
+  registerPageActions: (actions: PageActions) => void
+  unregisterPageActions: () => void
 }
 
 const VoiceControlContext = createContext<VoiceControlContextType | undefined>(undefined)
@@ -22,6 +38,15 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const recognitionRef = useRef<any>(null)
   const { setFeedback } = useAIFeedback()
+  const pageActionsRef = useRef<PageActions | null>(null)
+
+  const registerPageActions = (actions: PageActions) => {
+    pageActionsRef.current = actions;
+  };
+
+  const unregisterPageActions = () => {
+    pageActionsRef.current = null;
+  };
 
   const processCommand = async (command: string) => {
     if (isProcessing) return
@@ -62,6 +87,10 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       
       await new Promise(resolve => setTimeout(resolve, 1000))
       
+      const actionParts = data.action.split(':');
+      const mainAction = actionParts.length > 1 ? `${actionParts[0]}:${actionParts[1]}` : data.action;
+      const subAction = actionParts.length > 2 ? actionParts.slice(2).join(':') : null;
+
       switch (data.action) {
         case 'theme:dark':
           setTheme('dark')
@@ -119,6 +148,51 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
           router.push('/?type=job')
           break;
       }
+
+      // Handle parameterized actions
+      if (data.action.startsWith('pagination:next')) {
+        pageActionsRef.current?.goToNextPage?.();
+      } else if (data.action.startsWith('pagination:prev')) {
+        pageActionsRef.current?.goToPrevPage?.();
+      } else if (data.action.startsWith('pagination:items:')) {
+        const countStr = data.action.substring('pagination:items:'.length);
+        const count = parseInt(countStr, 10);
+        if (!isNaN(count) && [10, 20, 30, 50].includes(count)) {
+          pageActionsRef.current?.setItemsPerPage?.(count);
+        }
+      } else if (data.action.startsWith('search:keyword:')) {
+        const keyword = data.action.substring('search:keyword:'.length);
+        if (keyword) {
+          pageActionsRef.current?.searchByKeyword?.(keyword);
+        }
+      } else if (data.action.startsWith('sort:by:')) {
+        const sortType = data.action.substring('sort:by:'.length) as 'default' | 'points' | 'comments' | 'newest' | 'oldest';
+        if (['default', 'points', 'comments', 'newest', 'oldest'].includes(sortType)) {
+          pageActionsRef.current?.sortByPreference?.(sortType);
+        }
+      } else if (data.action.startsWith('filter:domain:clear')) {
+        pageActionsRef.current?.clearDomainFilter?.();
+      } else if (data.action.startsWith('filter:domain:')) {
+        const domain = data.action.substring('filter:domain:'.length);
+        if (domain) {
+          pageActionsRef.current?.setDomainFilter?.(domain);
+        }
+      } else if (data.action.startsWith('filter:keyword:clear')) {
+        pageActionsRef.current?.clearKeywordFilter?.();
+      } else if (data.action.startsWith('viewmode:')) {
+        const mode = data.action.substring('viewmode:'.length) as 'normal' | 'compact' | 'card';
+        if (['normal', 'compact', 'card'].includes(mode)) {
+          pageActionsRef.current?.setViewMode?.(mode);
+        }
+      } else if (data.action.startsWith('fontsize:')) {
+        const size = data.action.substring('fontsize:'.length) as 'small' | 'normal' | 'large';
+        if (['small', 'normal', 'large'].includes(size)) {
+          pageActionsRef.current?.setFontSize?.(size);
+        }
+      } else if (data.action.startsWith('filter:clearall')) {
+        pageActionsRef.current?.clearAllFilters?.();
+      }
+
     } catch (error) {
       console.error('Error processing command:', error)
       setFeedback({
@@ -206,7 +280,13 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
   }, [isListening])
 
   return (
-    <VoiceControlContext.Provider value={{ isListening, setIsListening, isProcessing }}>
+    <VoiceControlContext.Provider value={{ 
+      isListening, 
+      setIsListening, 
+      isProcessing, 
+      registerPageActions, 
+      unregisterPageActions 
+    }}>
       {children}
     </VoiceControlContext.Provider>
   )

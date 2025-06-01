@@ -7,6 +7,7 @@ import { StoryItem } from '../components/story-item'
 import { LoadingSkeleton, ErrorMessage } from '../components/loading'
 import { useStories } from '../hooks/use-stories'
 import { StoryFilters } from '../components/story-filters'
+import { useVoiceControl, PageActions } from '../context/voice-control-context';
 
 function HomeClient() {
   const searchParams = useSearchParams()
@@ -46,6 +47,7 @@ function HomeClient() {
   const [keywordFilter, setKeywordFilter] = useState('')
   const [viewMode, setViewMode] = useState<'normal' | 'compact' | 'card'>('normal')
   const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal')
+  const { registerPageActions, unregisterPageActions } = useVoiceControl();
   
   useEffect(() => {
     const savedItemsPerPage = localStorage.getItem('hn-items-per-page')
@@ -102,28 +104,32 @@ function HomeClient() {
     }
   }, [])
 
-  // Effect to update storyType from URL search parameter if it changes
-  useEffect(() => {
-    if (searchParams) {
-      const typeFromUrl = searchParams.get('type');
-      if (typeFromUrl && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(typeFromUrl)) {
-        if (storyType !== typeFromUrl) {
-          setStoryType(typeFromUrl as 'top' | 'new' | 'best' | 'job' | 'ask' | 'show');
-          setCurrentPage(1); // Reset to first page
-          localStorage.setItem('hn-story-type', typeFromUrl);
-        }
+  const handleSave = (postId: number) => {
+    setSavedPosts(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(postId)) {
+        newSet.delete(postId)
+      } else {
+        newSet.add(postId)
       }
-      // If typeFromUrl is null/empty and storyType is not the default, reset to default or localStorage
-      else if (!typeFromUrl && storyType !== (localStorage.getItem('hn-story-type') || 'top')) {
-          const savedStoryType = localStorage.getItem('hn-story-type');
-          const defaultType = (savedStoryType && ['top', 'new', 'best', 'job', 'ask', 'show'].includes(savedStoryType)) ? savedStoryType as 'top' | 'new' | 'best' | 'job' | 'ask' | 'show' : 'top';
-          if (storyType !== defaultType) {
-              setStoryType(defaultType);
-              setCurrentPage(1);
-          }
-      }
-    }
-  }, [searchParams, storyType]);
+      localStorage.setItem('hn-saved-posts', JSON.stringify([...newSet]))
+      return newSet
+    })
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1)
+    localStorage.setItem('hn-items-per-page', newItemsPerPage.toString())
+  }
+  
+  const handleChangeStoryType = (type: 'top' | 'new' | 'best' | 'job' | 'ask' | 'show') => {
+    router.push(`/?type=${type}`, { scroll: false });
+  }
 
   const { 
     stories, 
@@ -140,6 +146,59 @@ function HomeClient() {
     filterDomain: domainFilter,
     filterKeyword: keywordFilter
   })
+
+  const visibleStories = stories.filter(story => !hiddenPosts.has(story.id))
+  const totalPages = Math.ceil(totalStories / itemsPerPage)
+
+  useEffect(() => {
+    const pageActions: PageActions = {
+      goToNextPage: () => {
+        if (currentPage < totalPages) {
+          handlePageChange(currentPage + 1);
+        }
+      },
+      goToPrevPage: () => {
+        if (currentPage > 1) {
+          handlePageChange(currentPage - 1);
+        }
+      },
+      setItemsPerPage: (count: number) => {
+        handleItemsPerPageChange(count);
+      },
+      searchByKeyword: (keyword: string) => {
+        setKeywordFilter(keyword);
+      },
+      sortByPreference: (sortType: 'default' | 'points' | 'comments' | 'newest' | 'oldest') => {
+        setSortBy(sortType);
+      },
+      setDomainFilter: (domain: string) => {
+        setDomainFilter(domain);
+      },
+      clearDomainFilter: () => {
+        setDomainFilter('');
+      },
+      clearKeywordFilter: () => {
+        setKeywordFilter('');
+      },
+      setViewMode: (mode: 'normal' | 'compact' | 'card') => {
+        setViewMode(mode);
+      },
+      setFontSize: (size: 'small' | 'normal' | 'large') => {
+        setFontSize(size);
+      },
+      clearAllFilters: () => {
+        setDomainFilter('');
+        setKeywordFilter('');
+        // Potentially reset sort to default as well, if desired
+        // setSortBy('default'); 
+      }
+    };
+    registerPageActions(pageActions);
+
+    return () => {
+      unregisterPageActions();
+    };
+  }, [currentPage, totalPages, handlePageChange, handleItemsPerPageChange, setKeywordFilter, setSortBy, registerPageActions, unregisterPageActions, setDomainFilter, setViewMode, setFontSize]);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -179,36 +238,6 @@ function HomeClient() {
       return newSet
     })
   }
-
-  const handleSave = (postId: number) => {
-    setSavedPosts(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(postId)) {
-        newSet.delete(postId)
-      } else {
-        newSet.add(postId)
-      }
-      localStorage.setItem('hn-saved-posts', JSON.stringify([...newSet]))
-      return newSet
-    })
-  }
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  const handleItemsPerPageChange = (newItemsPerPage: number) => {
-    setItemsPerPage(newItemsPerPage)
-    setCurrentPage(1)
-    localStorage.setItem('hn-items-per-page', newItemsPerPage.toString())
-  }
-  
-  const handleChangeStoryType = (type: 'top' | 'new' | 'best' | 'job' | 'ask' | 'show') => {
-    router.push(`/?type=${type}`, { scroll: false });
-  }
-
-  const visibleStories = stories.filter(story => !hiddenPosts.has(story.id))
-  const totalPages = Math.ceil(totalStories / itemsPerPage)
 
   return (
     <div className="flex flex-col h-full">
