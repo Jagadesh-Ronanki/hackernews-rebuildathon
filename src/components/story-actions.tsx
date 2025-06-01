@@ -123,8 +123,8 @@ export function StoryActions({
   };
 
   // Icon and text size classes for all views (smaller icons)
-  const iconSize = 'w-3 h-3';
-  const textSize = viewMode === 'card' ? 'text-[8px] md:text-xs' : 'text-xs md:text-sm';
+  const iconSize = viewMode === 'card' ? 'w-3.5 h-3.5' : 'w-3 h-3';
+  const textSize = viewMode === 'card' ? 'text-[10px] md:text-xs' : 'text-xs md:text-sm';
 
   return (
     <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">

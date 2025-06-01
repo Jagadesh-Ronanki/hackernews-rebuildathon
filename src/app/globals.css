@@ -12,6 +12,31 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+@keyframes heart-pop {
+  0% { transform: scale(0.5) translateY(0); opacity: 0; }
+  50% { transform: scale(1.2) translateY(-10px); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+.animate-heart-pop {
+  animation: heart-pop 0.6s ease-out forwards;
+}
+
+@keyframes fly-away-heart {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) rotate(15deg) scale(0.3);
+  }
+}
+
+.animate-fly-away-heart {
+  animation: fly-away-heart 0.5s ease-out forwards;
+}
+
 /* Loading animation for story type changes */
 .story-transition-enter {
   opacity: 0;

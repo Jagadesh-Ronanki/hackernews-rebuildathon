@@ -7,6 +7,13 @@ import { Story } from '@/api'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { LoadingSkeleton } from '@/components/loading'
 
+interface ReadingListCollection {
+  id: string;
+  name: string;
+  storyIds: number[];
+  createdAt: number;
+}
+
 export default function SavedPage() {
   const [savedStoryIds, setSavedStoryIds] = useState<number[]>([])
   const [stories, setStories] = useState<Story[]>([])
@@ -18,22 +25,38 @@ export default function SavedPage() {
       setIsLoading(true)
       
       try {
+        // Get IDs from both saved posts and reading collections
         const savedStoriesString = localStorage.getItem('hn-saved-posts')
-        const ids = savedStoriesString ? JSON.parse(savedStoriesString) : []
+        const savedPostIds = savedStoriesString ? JSON.parse(savedStoriesString) : []
         
-        if (Array.isArray(ids) && ids.length > 0) {
-          setSavedStoryIds(ids)
+        // Get reading collections and extract their story IDs
+        const collectionsString = localStorage.getItem('hn-reading-collections')
+        const collections: ReadingListCollection[] = collectionsString ? JSON.parse(collectionsString) : []
+        
+        // Extract all story IDs from collections
+        const collectionIds = collections.flatMap(collection => collection.storyIds)
+        
+        // Combine both sources and remove duplicates
+        const allIds = Array.from(new Set([...savedPostIds, ...collectionIds]))
+        
+        if (allIds.length > 0) {
+          setSavedStoryIds(allIds)
           
           // Fetch story details for all saved stories
-          const storyPromises = ids.map(id => hackerNewsService.getItem(id))
+          const storyPromises = allIds.map(id => hackerNewsService.getItem(id))
           const storiesData = await Promise.all(storyPromises)
           
           // Filter out any null results (in case a story was deleted)
           const validStories = storiesData.filter(story => story !== null) as Story[]
           setStories(validStories)
+        } else {
+          setSavedStoryIds([])
+          setStories([])
         }
       } catch (e) {
         console.error('Error loading saved stories', e)
+        setSavedStoryIds([])
+        setStories([])
       } finally {
         setIsLoading(false)
       }
@@ -50,6 +73,21 @@ export default function SavedPage() {
     
     // Update stories state
     setStories(prevStories => prevStories.filter(story => story.id !== storyId))
+    
+    // Also remove from any collections
+    const collectionsString = localStorage.getItem('hn-reading-collections')
+    if (collectionsString) {
+      try {
+        const collections: ReadingListCollection[] = JSON.parse(collectionsString)
+        const updatedCollections = collections.map(collection => ({
+          ...collection,
+          storyIds: collection.storyIds.filter(id => id !== storyId)
+        }))
+        localStorage.setItem('hn-reading-collections', JSON.stringify(updatedCollections))
+      } catch (e) {
+        console.error('Error updating collections', e)
+      }
+    }
   }
   
   return (

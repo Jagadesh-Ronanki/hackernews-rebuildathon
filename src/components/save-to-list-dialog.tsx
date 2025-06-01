@@ -77,6 +77,15 @@ export function SaveToListDialog({ storyId, storyTitle, onSaved }: SaveToListDia
     const updatedCollections = [...collections, newCollection]
     setCollections(updatedCollections)
     localStorage.setItem('hn-reading-collections', JSON.stringify(updatedCollections))
+    
+    // Also add to saved posts to ensure it shows up in both places
+    const savedPostsStr = localStorage.getItem('hn-saved-posts')
+    const savedPosts = savedPostsStr ? JSON.parse(savedPostsStr) : []
+    if (!savedPosts.includes(storyId)) {
+      savedPosts.push(storyId)
+      localStorage.setItem('hn-saved-posts', JSON.stringify(savedPosts))
+    }
+    
     setNewCollectionName('')
     setSaveSuccess(true)
     setInProgress(false)
@@ -98,6 +107,15 @@ export function SaveToListDialog({ storyId, storyTitle, onSaved }: SaveToListDia
     
     setCollections(updatedCollections)
     localStorage.setItem('hn-reading-collections', JSON.stringify(updatedCollections))
+    
+    // Also add to saved posts to ensure it shows up in both places
+    const savedPostsStr = localStorage.getItem('hn-saved-posts')
+    const savedPosts = savedPostsStr ? JSON.parse(savedPostsStr) : []
+    if (!savedPosts.includes(storyId)) {
+      savedPosts.push(storyId)
+      localStorage.setItem('hn-saved-posts', JSON.stringify(savedPosts))
+    }
+    
     setSaveSuccess(true)
     setInProgress(false)
     

@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes'
 import { useEffect } from 'react'
 import { useVoiceControl } from '../context/voice-control-context'
 import { useAuth } from '../context/auth-context'
-import { BiSolidMicrophone } from "react-icons/bi";
+import { BsStars  } from "react-icons/bs";
 import { LuSunDim, LuMoon } from "react-icons/lu";
 
 export function Navbar() {
@@ -18,7 +18,7 @@ export function Navbar() {
     const [mounted, setMounted] = useState(false)
     const { isListening, setIsListening } = useVoiceControl()
     const { user, logout } = useAuth()
-    const router = usePathname().startsWith('/search') ? undefined : usePathname()
+    const router = pathname?.startsWith('/search') ? undefined : usePathname()
     
     const isActive = (path: string) => pathname === path
 
@@ -55,10 +55,26 @@ export function Navbar() {
                                     className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                                 />
                                 <span>HACKER NEWS</span>
-                            </Link>
+                            </Link> 
                             
-                            <span className="font-mono text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                | Your Place To Explore
+                            <span className="relative group font-mono text-xs sm:text-sm text-gray-500 dark:text-gray-400 cursor-pointer">
+                                | <span className="hover:text-orange-500 transition-colors">🧡</span>
+                                {/* Container for flying hearts - hidden by default, shown on hover */}
+                                <div className="absolute -top-2 left-1/2 -translate-x-1/2 hidden group-hover:block pointer-events-none">
+                                    {/* Multiple heart elements for staggered animation */}
+                                    {[...Array(5)].map((_, i) => (
+                                        <span 
+                                            key={i} 
+                                            className="absolute text-lg text-orange-500 opacity-0 animate-fly-away-heart"
+                                            style={{ 
+                                                animationDelay: `${i * 0.05}s`,
+                                                left: mounted ? `${Math.random() * 20 - 15}px` : '0px'
+                                            }}
+                                        >
+                                            🧡
+                                        </span>
+                                    ))}
+                                </div>
                             </span>
                             
                             <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 ml-auto">
@@ -120,7 +136,7 @@ export function Navbar() {
                                 title={isListening ? 'Stop listening' : 'Start voice control'}
                                 aria-label={isListening ? 'Stop listening' : 'Start voice control'}
                             >
-                                <BiSolidMicrophone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <BsStars  className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
 
                             {/* Theme Toggle */}
@@ -212,7 +228,7 @@ export function Navbar() {
                                 title={isListening ? 'Stop listening' : 'Start voice control'}
                                 aria-label={isListening ? 'Stop listening' : 'Start voice control'}
                             >
-                                <BiSolidMicrophone className="w-3 h-3" />
+                                <BsStars  className="w-3 h-3" />
                             </button>
 
                             {/* Mobile Theme Toggle */}

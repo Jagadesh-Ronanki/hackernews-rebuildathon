@@ -260,7 +260,7 @@ export default function Home() {
                 className={`
                   ${viewMode === 'normal' ? 'space-y-1 divide-y divide-gray-100 dark:divide-gray-800' : ''}
                   ${viewMode === 'compact' ? 'space-y-0 divide-y divide-gray-100 dark:divide-gray-800' : ''}
-                  ${viewMode === 'card' ? 'grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4' : ''}
+                  ${viewMode === 'card' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6' : ''}
                 `}
                 key={`stories-${storyType}-${currentPage}`} // Force remount on type or page change for animation
               >

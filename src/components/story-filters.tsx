@@ -60,11 +60,49 @@ export function StoryFilters({
   viewMode = 'normal',
   fontSize = 'normal'
 }: StoryFiltersProps) {
+  const [inputValueDomain, setInputValueDomain] = useState(domainFilter);
+  const [inputValueKeyword, setInputValueKeyword] = useState(keywordFilter);
+
   const [savedDomains, setSavedDomains] = useState<string[]>([]);
   const [savedKeywords, setSavedKeywords] = useState<string[]>([]);
   const [newDomain, setNewDomain] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
   const [showSavedFilters, setShowSavedFilters] = useState(false);
+
+  // Update input fields if the external filter props change
+  useEffect(() => {
+    setInputValueDomain(domainFilter);
+  }, [domainFilter]);
+
+  useEffect(() => {
+    setInputValueKeyword(keywordFilter);
+  }, [keywordFilter]);
+
+  // Debounce for domain filter
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (inputValueDomain !== domainFilter) {
+        onDomainFilterChange(inputValueDomain);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [inputValueDomain, onDomainFilterChange, domainFilter]);
+
+  // Debounce for keyword filter
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (inputValueKeyword !== keywordFilter) {
+        onKeywordFilterChange(inputValueKeyword);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [inputValueKeyword, onKeywordFilterChange, keywordFilter]);
 
   // Load saved filters from localStorage on mount
   useEffect(() => {
@@ -227,16 +265,19 @@ export function StoryFilters({
                     <Input
                       id="domain-filter"
                       placeholder="e.g., github.com"
-                      value={domainFilter}
-                      onChange={(e) => onDomainFilterChange(e.target.value)}
+                      value={inputValueDomain}
+                      onChange={(e) => setInputValueDomain(e.target.value)}
                       className="h-7 text-xs"
                     />
                     <Button 
                       size="sm"
                       variant="outline"
                       className="px-1.5 h-7 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/10 dark:hover:text-orange-400 transition-colors"
-                      onClick={() => onDomainFilterChange('')}
-                      disabled={!domainFilter}
+                      onClick={() => {
+                        setInputValueDomain('');
+                        onDomainFilterChange('');
+                      }}
+                      disabled={!inputValueDomain}
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -252,16 +293,19 @@ export function StoryFilters({
                     <Input
                       id="keyword-filter"
                       placeholder="e.g., javascript, react"
-                      value={keywordFilter}
-                      onChange={(e) => onKeywordFilterChange(e.target.value)}
+                      value={inputValueKeyword}
+                      onChange={(e) => setInputValueKeyword(e.target.value)}
                       className="h-7 text-xs"
                     />
                     <Button 
                       size="sm"
                       variant="outline"
                       className="px-1.5 h-7 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/10 dark:hover:text-orange-400 transition-colors"
-                      onClick={() => onKeywordFilterChange('')}
-                      disabled={!keywordFilter}
+                      onClick={() => {
+                        setInputValueKeyword('');
+                        onKeywordFilterChange('');
+                      }}
+                      disabled={!inputValueKeyword}
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -582,16 +626,19 @@ export function StoryFilters({
                     <Input
                       id="domain-filter"
                       placeholder="e.g., github.com"
-                      value={domainFilter}
-                      onChange={(e) => onDomainFilterChange(e.target.value)}
+                      value={inputValueDomain}
+                      onChange={(e) => setInputValueDomain(e.target.value)}
                       className="h-7 text-xs"
                     />
                     <Button 
                       size="sm"
                       variant="outline"
                       className="px-1.5 h-7 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/10 dark:hover:text-orange-400 transition-colors"
-                      onClick={() => onDomainFilterChange('')}
-                      disabled={!domainFilter}
+                      onClick={() => {
+                        setInputValueDomain('');
+                        onDomainFilterChange('');
+                      }}
+                      disabled={!inputValueDomain}
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -607,16 +654,19 @@ export function StoryFilters({
                     <Input
                       id="keyword-filter"
                       placeholder="e.g., javascript, react"
-                      value={keywordFilter}
-                      onChange={(e) => onKeywordFilterChange(e.target.value)}
+                      value={inputValueKeyword}
+                      onChange={(e) => setInputValueKeyword(e.target.value)}
                       className="h-7 text-xs"
                     />
                     <Button 
                       size="sm"
                       variant="outline"
                       className="px-1.5 h-7 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/10 dark:hover:text-orange-400 transition-colors"
-                      onClick={() => onKeywordFilterChange('')}
-                      disabled={!keywordFilter}
+                      onClick={() => {
+                        setInputValueKeyword('');
+                        onKeywordFilterChange('');
+                      }}
+                      disabled={!inputValueKeyword}
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -836,7 +886,7 @@ export function StoryFilters({
 
       {/* Active Filter Display - Only show when filters are active */}
       {(domainFilter || keywordFilter) && (
-        <div className="flex flex-wrap items-center gap-1 mt-2 text-xs">
+        <div className="flex flex-wrap items-center gap-1 mt-2 text-xs mb-3">
           {domainFilter && (
             <Badge 
               variant="secondary" 

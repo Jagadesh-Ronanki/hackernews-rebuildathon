@@ -12,7 +12,8 @@ import DynamicCommentItem from '../../../components/dynamic-comment-item'
 import LoadMoreTrigger from '../../../components/load-more-trigger'
 
 export default function StoryPage() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = params?.id
   const storyId = parseInt(id as string, 10)
   const { 
     story, 
@@ -108,7 +109,7 @@ export default function StoryPage() {
           </div>
         )}
         
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+        <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           {story.title}
         </h1>
         
@@ -125,7 +126,7 @@ export default function StoryPage() {
           </div>
         )}
         
-        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4 space-x-3">
+        <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4 gap-x-3 gap-y-1">
           <span>{story.score} points</span>
           <span>by <Link href={`/user/${story.by}`} className="hover:underline hover:text-orange-600 dark:hover:text-orange-400">{story.by}</Link></span>
           <span>{timeAgo}</span>
