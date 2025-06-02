@@ -55,9 +55,9 @@ export function PaginationBar({
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
-    <div className="z-50">
+    <div className="sticky bottom-0 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 sm:relative sm:bg-transparent sm:border-0 sm:z-auto z-40">
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <div className="flex items-center justify-between h-12 sm:h-14">
+        <div className="flex items-center justify-between h-14 sm:h-14">
           {/* Desktop Pagination */}
           <div className="hidden md:flex items-center justify-between w-full gap-x-4 lg:gap-x-6">
             {/* Section 1 - Page Info */}
@@ -164,7 +164,7 @@ export function PaginationBar({
           </div>
 
           {/* Mobile Pagination */}
-          <div className="md:hidden mb-20 flex items-center justify-between w-full">
+          <div className="md:hidden flex items-center justify-between w-full pb-14 sm:pb-0">
             <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md bg-orange-50/80 dark:bg-orange-900/10 backdrop-blur-md border border-orange-200/70 dark:border-orange-800/30">
               <button
                 onClick={() => onPageChange(currentPage - 1)}

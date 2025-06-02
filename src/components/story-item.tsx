@@ -42,7 +42,7 @@ export function StoryItem({
       large: 'text-base sm:text-lg'
     },
     meta: {
-      small: 'text-[7px] sm:text-xs',
+      small: 'text-xs sm:text-xs',
       normal: 'text-xs sm:text-sm',
       large: 'text-sm sm:text-base'
     }
@@ -59,13 +59,13 @@ export function StoryItem({
   
   return (
     <article
-      className={`flex ${viewMode === 'card' ? 'flex-col justify-between' : 'flex-row items-center'} ${viewModeClasses.container[viewMode]} animate-fadeIn ${viewMode === 'card' ? 'overflow-hidden' : ''}`}
+      className={`flex ${viewMode === 'card' ? 'flex-col justify-between' : 'flex-row items-center py-4 px-3'} ${viewModeClasses.container[viewMode]} animate-fadeIn ${viewMode === 'card' ? 'overflow-hidden' : ''} max-sm:rounded-xl max-sm:p-2 max-sm:mb-3`}
       style={{ animationDelay: `${index * 50}ms` }}
       aria-labelledby={`post-title-${story.id}`}
     >
       {/* Content Section */}
       <div className={`flex-1 min-w-0 ${viewMode === 'card' ? '' : 'pr-2'}`}>
-        <div className="flex items-start space-x-2 sm:space-x-3 min-w-0 px-1 sm:px-2">
+        <div className="flex items-start space-x-2 sm:space-x-3 min-w-0 px-1 sm:px-2 max-sm:space-x-1">
           {/* Post Number */}
           {viewMode !== 'card' && <span 
             className={`hidden md:flex font-mono ${fontSizeClasses.meta[fontSize]} text-orange-500 dark:text-orange-400 min-w-[1rem] text-right`}
@@ -75,10 +75,10 @@ export function StoryItem({
           </span>}
           <div className="flex-1 min-w-0">
             {/* Title and URL */}
-            <div className={`${viewMode === 'card' ? 'flex flex-col' : 'flex flex-col md:flex-row md:items-baseline md:space-x-2'} mb-1 sm:mb-2`}>
+            <div className={`${viewMode === 'card' ? 'flex flex-col' : 'flex flex-col md:flex-row md:items-baseline md:space-x-2 gap-y-1'} mb-1`}>
               <h2 
                 id={`post-title-${story.id}`}
-                className={`${fontSizeClasses.title[fontSize]} font-semibold text-gray-900 dark:text-gray-100 break-words transition-colors`}
+                className={`${fontSizeClasses.title[fontSize]} font-semibold text-gray-900 dark:text-gray-100 break-words transition-colors max-sm:text-[16px] max-sm:mb-0.5`}
               >
                 {story.url ? (
                   <a 
@@ -99,27 +99,27 @@ export function StoryItem({
                 )}
               </h2>
               {domain && (
-                <span className={`${fontSizeClasses.meta[fontSize]} text-gray-500 dark:text-gray-400 ${viewMode === 'card' ? 'w-full mt-1' : 'truncate'} transition-colors`}>
+                <span className={`${fontSizeClasses.meta[fontSize]} text-gray-500 dark:text-gray-400 ${viewMode === 'card' ? 'w-full mt-1' : 'truncate'} transition-colors max-sm:block max-sm:mt-0.5`}>
                   ({domain})
                 </span>
               )}
             </div>
             {/* Meta Information */}
-            <div className={`flex items-center flex-wrap ${viewMode === 'card' ? 'gap-1 md:gap-2' : 'gap-2 md:gap-4'} ${fontSizeClasses.meta[fontSize]} text-gray-500 dark:text-gray-400 font-mono`}>
+            <div className={`flex items-center flex-wrap ${viewMode === 'card' ? 'gap-1 md:gap-2' : 'gap-2 md:gap-4'} ${fontSizeClasses.meta[fontSize]} text-gray-500 dark:text-gray-400 font-mono max-sm:pt-1 max-sm:text-xs max-sm:gap-1 max-sm:gap-x-3`}>
               {story.title?.startsWith('Ask HN:') && (
-                <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-1.5 py-0.5 rounded text-[7px] md:text-xs font-medium">
+                <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-1.5 py-0.5 rounded text-xs md:text-xs font-medium">
                   Ask HN
                 </span>
               )}
               {story.title?.startsWith('Show HN:') && (
-                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-1.5 py-0.5 rounded text-[7px] md:text-xs font-medium">
+                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs md:text-xs font-medium">
                   Show HN
                 </span>
               )}
               {(story.title || story.text) && extractTopics(story.title || '', story.text || '').slice(0, 2).map(topic => (
                 <span 
                   key={topic}
-                  className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-1.5 py-0.5 rounded text-[7px] md:text-xs font-medium"
+                  className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-1.5 py-0.5 rounded text-xs md:text-xs font-medium"
                 >
                   {topic}
                 </span>
@@ -138,7 +138,7 @@ export function StoryItem({
           </div>
         </div>
         {/* Mobile: Actions at bottom */}
-        <div className={`flex sm:hidden mt-2 ${viewMode === 'card' ? 'border-t pt-2 mx-2' : 'pl-2'}`}>
+        <div className={`flex sm:hidden mt-2 ${viewMode === 'card' ? 'border-t pt-2 mx-2' : 'justify-end border-y border-gray-100/80 pl-2'} max-sm:justify-between max-sm:space-x-2`}>
           <StoryActions 
             story={story}
             isUpvoted={isUpvoted}

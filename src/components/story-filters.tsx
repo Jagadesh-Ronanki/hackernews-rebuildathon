@@ -524,7 +524,7 @@ export function StoryFilters({
       </div>
 
       {/* Mobile/bottom filter bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 flex sm:hidden items-center justify-around bg-orange-50/95 dark:bg-orange-900/80 backdrop-blur-md border-t border-orange-200 dark:border-orange-800 py-1 px-2">
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex sm:hidden items-center justify-around bg-orange-50 dark:bg-gray-900 backdrop-blur-lg border-t border-orange-200 dark:border-orange-800 py-2.5 px-3 pb-[env(safe-area-inset-bottom)]">
         {/* Sort Button */}
         <Popover>
           <Tooltip>
@@ -532,17 +532,17 @@ export function StoryFilters({
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={`h-7 w-7 p-0 transition-all duration-200 ${
+                className={`h-10 w-10 p-0 transition-all duration-200 touch-manipulation ${
                   sortBy !== 'default' 
                     ? 'bg-orange-100 text-orange-600 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800' 
-                    : 'text-gray-500 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10'
+                    : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10'
                 }`}
               >
-                {sortBy === 'default' && <ArrowUpDown className="w-3.5 h-3.5" />}
-                {sortBy === 'points' && <SortAsc className="w-3.5 h-3.5" />}
-                {sortBy === 'comments' && <ListFilter className="w-3.5 h-3.5" />}
-                {sortBy === 'newest' && <ArrowDownUp className="w-3.5 h-3.5" />}
-                {sortBy === 'oldest' && <ArrowUpDown className="w-3.5 h-3.5" />}
+                {sortBy === 'default' && <ArrowUpDown className="w-4.5 h-4.5" />}
+                {sortBy === 'points' && <SortAsc className="w-4.5 h-4.5" />}
+                {sortBy === 'comments' && <ListFilter className="w-4.5 h-4.5" />}
+                {sortBy === 'newest' && <ArrowDownUp className="w-4.5 h-4.5" />}
+                {sortBy === 'oldest' && <ArrowUpDown className="w-4.5 h-4.5" />}
               </Button>
             </PopoverTrigger>
             <TooltipContent side="top">
@@ -552,8 +552,13 @@ export function StoryFilters({
                 sortBy === 'newest' ? 'Newest' : 'Oldest'}</p>
             </TooltipContent>
           </Tooltip>
-          <PopoverContent className="w-36 p-1" align="end">
-            <div className="space-y-0.5">
+          <PopoverContent 
+            className="w-40 p-1.5 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800" 
+            align="center"
+            side="top"
+            sideOffset={8}
+          >
+            <div className="space-y-1">
               {[
                 { value: 'default', label: 'Default', icon: ArrowUpDown },
                 { value: 'points', label: 'Points', icon: SortAsc },
@@ -563,14 +568,14 @@ export function StoryFilters({
               ].map(({ value, label, icon: Icon }) => (
                 <button
                   key={value}
-                  className={`w-full px-2 py-1.5 text-left rounded-md text-xs flex items-center gap-2 transition-colors ${
+                  className={`w-full px-3 py-2 text-left rounded-md text-sm flex items-center gap-2 transition-colors touch-manipulation ${
                     sortBy === value 
                       ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium' 
                       : 'hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400'
                   }`}
                   onClick={() => handleSortChange(value as SortType)}
                 >
-                  <Icon className="w-3.5 h-3.5" /> {label}
+                  <Icon className="w-4 h-4" /> {label}
                 </button>
               ))}
             </div>
@@ -585,13 +590,13 @@ export function StoryFilters({
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="h-7 w-7 p-0 transition-all duration-200 bg-orange-100 text-orange-600 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800"
+                className="h-10 w-10 p-0 transition-all duration-200 bg-orange-100 text-orange-600 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 touch-manipulation"
                 onClick={() => {
                   onDomainFilterChange('');
                   onKeywordFilterChange('');
                 }}
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4.5 h-4.5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top">
@@ -606,16 +611,21 @@ export function StoryFilters({
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-7 w-7 p-0 transition-all duration-200 text-gray-500 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10"
+                  className="h-10 w-10 p-0 transition-all duration-200 text-gray-600 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10 touch-manipulation"
                 >
-                  <Filter className="w-3.5 h-3.5" />
+                  <Filter className="w-4.5 h-4.5" />
                 </Button>
               </PopoverTrigger>
               <TooltipContent side="top">
                 <p className="text-xs">Filter Stories</p>
               </TooltipContent>
             </Tooltip>
-            <PopoverContent className="w-64 p-2.5" align="end">
+            <PopoverContent 
+              className="w-72 p-3 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 max-h-[80vh] overflow-y-auto" 
+              align="center"
+              side="top"
+              sideOffset={8}
+            >
               <div className="space-y-3">
                 {/* Domain Filter */}
                 <div>
@@ -800,31 +810,36 @@ export function StoryFilters({
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={`h-7 w-7 p-0 transition-all duration-200 ${
+                className={`h-10 w-10 p-0 transition-all duration-200 ${
                   fontSize !== 'normal' 
                     ? 'bg-orange-100 text-orange-600 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800' 
-                    : 'text-gray-500 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10'
+                    : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10'
                 }`}
               >
                 {fontSize === 'small' && <Text className="w-3 h-3" />}
-                {fontSize === 'normal' && <Text className="w-3.5 h-3.5" />}
-                {fontSize === 'large' && <Text className="w-4 h-4" />}
+                {fontSize === 'normal' && <Text className="w-4 h-4" />}
+                {fontSize === 'large' && <Text className="w-5 h-5" />}
               </Button>
             </PopoverTrigger>
             <TooltipContent side="top">
               <p className="text-xs">Font Size: {fontSize.charAt(0).toUpperCase() + fontSize.slice(1)}</p>
             </TooltipContent>
           </Tooltip>
-          <PopoverContent className="w-32 p-1" align="end">
-            <div className="space-y-0.5">
+          <PopoverContent 
+            className="w-40 p-1.5 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800" 
+            align="center"
+            side="top"
+            sideOffset={8}
+          >
+            <div className="space-y-1">
               {[
                 { value: 'small', label: 'Small', size: 'w-3 h-3' },
-                { value: 'normal', label: 'Normal', size: 'w-3.5 h-3.5' },
-                { value: 'large', label: 'Large', size: 'w-4 h-4' }
+                { value: 'normal', label: 'Normal', size: 'w-4 h-4' },
+                { value: 'large', label: 'Large', size: 'w-5 h-5' }
               ].map(({ value, label, size }) => (
                 <button
                   key={value}
-                  className={`w-full px-2 py-1.5 text-left rounded-md text-xs flex items-center gap-2 transition-colors ${
+                  className={`w-full px-3 py-2 text-left rounded-md text-sm flex items-center gap-2 transition-colors ${
                     fontSize === value 
                       ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium' 
                       : 'hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400'
@@ -845,23 +860,28 @@ export function StoryFilters({
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={`h-7 w-7 p-0 transition-all duration-200 ${
+                className={`h-10 w-10 p-0 transition-all duration-200 ${
                   viewMode !== 'normal' 
                     ? 'bg-orange-100 text-orange-600 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800' 
-                    : 'text-gray-500 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10'
+                    : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50 dark:text-gray-400 dark:hover:text-orange-400 dark:hover:bg-orange-900/10'
                 }`}
               >
-                {viewMode === 'normal' && <AlignJustify className="w-3.5 h-3.5" />}
-                {viewMode === 'compact' && <List className="w-3.5 h-3.5" />}
-                {viewMode === 'card' && <Grid3X3 className="w-3.5 h-3.5" />}
+                {viewMode === 'normal' && <AlignJustify className="w-4 h-4" />}
+                {viewMode === 'compact' && <List className="w-4 h-4" />}
+                {viewMode === 'card' && <Grid3X3 className="w-4 h-4" />}
               </Button>
             </PopoverTrigger>
             <TooltipContent side="top">
               <p className="text-xs">View Mode: {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)}</p>
             </TooltipContent>
           </Tooltip>
-          <PopoverContent className="w-32 p-1" align="end">
-            <div className="space-y-0.5">
+          <PopoverContent 
+            className="w-40 p-1.5 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800" 
+            align="center"
+            side="top"
+            sideOffset={8}
+          >
+            <div className="space-y-1">
               {[
                 { value: 'normal', label: 'Normal', icon: AlignJustify },
                 { value: 'compact', label: 'Compact', icon: List },
@@ -869,14 +889,14 @@ export function StoryFilters({
               ].map(({ value, label, icon: Icon }) => (
                 <button
                   key={value}
-                  className={`w-full px-2 py-1.5 text-left rounded-md text-xs flex items-center gap-2 transition-colors ${
+                  className={`w-full px-3 py-2 text-left rounded-md text-sm flex items-center gap-2 transition-colors ${
                     viewMode === value 
                       ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium' 
                       : 'hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400'
                   }`}
                   onClick={() => handleViewModeChange(value as ViewMode)}
                 >
-                  <Icon className="w-3.5 h-3.5" /> {label}
+                  <Icon className="w-4 h-4" /> {label}
                 </button>
               ))}
             </div>

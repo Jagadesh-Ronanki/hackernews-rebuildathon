@@ -117,7 +117,7 @@ const AskPageWidget: React.FC = () => {
         onClick={toggleOpen}
         variant="outline"
         size="icon"
-        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 h-14 w-14 rounded-md shadow-lg bg-orange-500 hover:bg-orange-600 text-white dark:bg-orange-600 dark:hover:bg-orange-700 border-none z-50"
+        className="fixed bottom-24 right-2 md:bottom-8 md:right-8 h-14 w-14 rounded-md shadow-lg bg-orange-100/70 backdrop-blur-2xl hover:bg-orange-100 text-orange-900 dark:bg-orange-600 dark:hover:bg-orange-700 border-none z-50"
         aria-label="Ask a question about this page"
       >
         {isOpen ? <X size={28} /> : <Stars size={28} />}
@@ -127,7 +127,7 @@ const AskPageWidget: React.FC = () => {
         <div
           ref={widgetRef}
           className={cn(
-            "fixed bottom-24 right-6 sm:bottom-28 sm:right-8 w-[calc(100vw-3rem)] max-w-md h-auto max-h-[70vh]",
+            "fixed bottom-28 right-2 sm:bottom-28 sm:right-8 w-[calc(100vw-3rem)] max-w-md h-auto max-h-[70vh]",
             "bg-orange-50 dark:bg-gray-900/80 backdrop-blur-md shadow-xl rounded-lg border border-orange-200 dark:border-gray-700",
             "flex flex-col transition-all duration-300 ease-in-out z-40 overflow-hidden"
           )}

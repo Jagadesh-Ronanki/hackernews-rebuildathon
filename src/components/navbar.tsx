@@ -260,7 +260,7 @@ export function Navbar() {
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="md:hidden absolute top-[48px] left-0 right-0 z-50 bg-orange-200/10 backdrop-blur-md border-b border-orange-200/30 dark:border-orange-900/20 shadow-lg">
+                    <div className="md:hidden absolute top-[48px] left-0 right-0 z-50 bg-orange-50 backdrop-blur-md border-b border-orange-200/30 dark:border-orange-900/20 shadow-lg">
                         <div className="flex flex-col">
                             <Link 
                                 href="/news" 
