@@ -109,7 +109,7 @@ export function AIFeedbackOverlay() {
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center pointer-events-auto ${feedback.isSummary && isSummaryFullScreen ? '' : 'bg-black/30 backdrop-blur-sm'}`}>
-      <div className={`relative ${feedback.isSummary && isSummaryFullScreen ? 'w-full h-full bg-orange-50 dark:bg-neutral-900 rounded-none shadow-none border-none' : 'bg-orange-50 dark:bg-neutral-900/50 backdrop-blur-lg border border-orange-300/70 dark:border-orange-700/50 rounded-lg shadow-2xl max-w-lg w-full mx-4'} p-6 animate-in fade-in zoom-in-95 duration-300 flex flex-col`}>
+      <div className={`relative ${feedback.isSummary && isSummaryFullScreen ? 'w-full h-full bg-orange-50 dark:bg-neutral-900 rounded-none shadow-none border-none' : 'bg-orange-50 dark:bg-neutral-900 backdrop-blur-lg border border-orange-300/70 dark:border-orange-700/50 rounded-lg shadow-2xl max-w-lg w-full mx-4'} p-6 animate-in fade-in zoom-in-95 duration-300 flex flex-col`}>
         {feedback.isProcessing ? (
           <>
             <div className="flex justify-center mb-4">

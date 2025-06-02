@@ -25,8 +25,6 @@ interface VoiceControlContextType {
   isProcessing: boolean
   registerPageActions: (actions: PageActions) => void
   unregisterPageActions: () => void
-  pauseRecognitionForAudio: () => void
-  resumeRecognitionAfterAudio: () => void
 }
 
 const VoiceControlContext = createContext<VoiceControlContextType | undefined>(undefined)
@@ -34,7 +32,6 @@ const VoiceControlContext = createContext<VoiceControlContextType | undefined>(u
 export function VoiceControlProvider({ children }: { children: ReactNode }) {
   const [isListening, setIsListening] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [isRecognitionPausedForAudio, setIsRecognitionPausedForAudio] = useState(false)
   const [conversationHistory, setConversationHistory] = useState<string[]>([])
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
@@ -49,24 +46,6 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
 
   const unregisterPageActions = () => {
     pageActionsRef.current = null;
-  };
-
-  const pauseRecognitionForAudio = () => {
-    console.log('Pausing recognition for audio playback');
-    setIsRecognitionPausedForAudio(true);
-    if (recognitionRef.current && isListening) {
-      try {
-        recognitionRef.current.stop();
-        console.log('Speech recognition stopped for audio playback.');
-      } catch (e) {
-        console.error('Error stopping recognition for audio:', e);
-      }
-    }
-  };
-
-  const resumeRecognitionAfterAudio = () => {
-    console.log('Attempting to resume recognition after audio playback');
-    setIsRecognitionPausedForAudio(false);
   };
 
   const processCommand = async (command: string) => {
@@ -102,7 +81,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       setFeedback({
         isProcessing: false,
         command,
-        action: data.actions.map((a: any) => a.action).join(', '),
+        action: data.actions.map((a: any) => a.action).join(', '), // Combine actions for display
         reason: data.reason
       })
       
@@ -212,10 +191,11 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
           case 'filter:clearall':
             pageActionsRef.current?.clearAllFilters?.();
             break;
-          case 'summarize':
+          case 'summarize': // Added case for summarize
             console.log(`Condition matched: summarize, value: ${currentValue}`);
             if (currentValue === 'page') {
               const mainContentElement = document.querySelector('#main-scrollable-content') || document.body;
+              // Cast to HTMLElement to ensure innerText is available
               const pageText = (mainContentElement as HTMLElement).innerText;
               
               console.log('Attempting to summarize page content.');
@@ -232,9 +212,10 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
                     isProcessing: false,
                     command,
                     action: 'summarize:page',
-                    reason: data.summary,
-                    isSummary: true
+                    reason: data.summary, // Display summary in the reason field
+                    isSummary: true // Mark as summary
                   });
+                  // Speech synthesis will be handled by the overlay
                 } else {
                   console.error('Failed to summarize page:', data.error);
                   setFeedback({
@@ -242,8 +223,8 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
                     command,
                     action: 'summarize:page',
                     reason: `Failed to summarize: ${data.error}`,
-                    isSummary: false
-                  }, 5000);
+                    isSummary: false // Not a summary, can auto-clear
+                  }, 5000); // Display error for 5 seconds
                 }
               } catch (error) {
                 console.error('Error calling summarize API:', error);
@@ -252,8 +233,8 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
                   command,
                   action: 'summarize:page',
                   reason: 'Error calling summarize API.',
-                  isSummary: false
-                }, 5000);
+                  isSummary: false // Not a summary, can auto-clear
+                }, 5000); // Display error for 5 seconds
               }
             } else {
               console.warn(`Unknown summarize value: ${currentValue} for action: summarize`);
@@ -264,7 +245,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
             break;
         }
         if (data.actions.length > 1 && actionItem !== data.actions[data.actions.length - 1]) {
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second delay
         }
       }
     } catch (error) {
@@ -294,7 +275,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
     recognition.lang = 'en-US'
     
     recognition.onend = () => {
-      if (isListening && recognitionRef.current && !isRecognitionPausedForAudio) {
+      if (isListening && recognitionRef.current) {
         try {
           recognitionRef.current.start()
         } catch (e) {
@@ -315,7 +296,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       console.error('Speech recognition error:', event.error)
       
       if (event.error === 'no-speech' || event.error === 'audio-capture') {
-        if (isListening && recognitionRef.current && !isRecognitionPausedForAudio) {
+        if (isListening && recognitionRef.current) {
           setTimeout(() => {
             try {
               recognitionRef.current.start()
@@ -337,35 +318,21 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
         recognitionRef.current.stop()
       }
     }
-  }, [theme, pathname, conversationHistory, isListening, isProcessing, isRecognitionPausedForAudio])
+  }, [theme, pathname, conversationHistory, isListening, isProcessing])
 
   useEffect(() => {
     if (recognitionRef.current) {
-      if (isListening && !isRecognitionPausedForAudio) {
+      if (isListening) {
         try {
           recognitionRef.current.start()
-          console.log('Speech recognition started.');
         } catch (e) {
-          if (e instanceof DOMException && e.name === 'InvalidStateError') {
-            console.warn('Speech recognition already started.');
-          } else {
-            console.error('Error starting speech recognition:', e);
-          }
+          console.log('Start error:', e)
         }
       } else {
-        try {
-          recognitionRef.current.stop()
-          console.log('Speech recognition stopped (isListening or isRecognitionPausedForAudio changed).');
-        } catch (e) {
-          if (e instanceof DOMException && e.name === 'InvalidStateError') {
-            console.warn('Speech recognition already stopped.');
-          } else {
-            console.error('Error stopping speech recognition:', e);
-          }
-        }
+        recognitionRef.current.stop()
       }
     }
-  }, [isListening, isRecognitionPausedForAudio])
+  }, [isListening])
 
   return (
     <VoiceControlContext.Provider value={{ 
@@ -373,9 +340,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       setIsListening, 
       isProcessing, 
       registerPageActions, 
-      unregisterPageActions,
-      pauseRecognitionForAudio,
-      resumeRecognitionAfterAudio
+      unregisterPageActions 
     }}>
       {children}
     </VoiceControlContext.Provider>
