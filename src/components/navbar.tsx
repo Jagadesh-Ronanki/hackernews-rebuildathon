@@ -18,7 +18,7 @@ export function Navbar() {
     const [mounted, setMounted] = useState(false)
     const { isListening, setIsListening } = useVoiceControl()
     const { user, logout } = useAuth()
-    const router = pathname?.startsWith('/search') ? undefined : usePathname()
+    const router = pathname?.startsWith('/search') ? undefined : pathname;
     
     const isActive = (path: string) => pathname === path
 

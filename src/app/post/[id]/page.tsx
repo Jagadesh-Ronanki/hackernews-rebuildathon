@@ -91,7 +91,7 @@ export default function StoryPage() {
   const commentsForSummary = comments.map(comment => ({ text: comment.text || '' }));
 
   return (
-    <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+    <div id="main-scrollable-content" className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
       
       {/* Story header */}
       <div className="mb-4 sm:mb-6">
@@ -239,5 +239,3 @@ export default function StoryPage() {
     </div>
   )
 }
-
-// The old CommentItem component has been replaced by the dynamic version in its own file

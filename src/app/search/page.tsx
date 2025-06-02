@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { StoryItem } from '../../components/story-item'
 import { LoadingSkeleton, ErrorMessage } from '../../components/loading'
 import { useSearch } from '../../hooks/use-search'
 import { Story } from '@/api'
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams()
   const query = searchParams?.get('q') || ''
   const [isMobile, setIsMobile] = useState(false)
@@ -112,5 +112,13 @@ export default function SearchPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <SearchPageContent />
+    </Suspense>
   )
 }

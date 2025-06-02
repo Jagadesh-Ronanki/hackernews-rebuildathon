@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     - "scroll" (value: "top" | "bottom") - e.g., "scroll to top" -> { "action": "scroll", "value": "top" }
     - "page" (value: "refresh") - e.g., "refresh page" -> { "action": "page", "value": "refresh" }
     - "summarize" (value: "page") - e.g., "summarize page" -> { "action": "summarize", "value": "page" }
-    - "navigate:storytype" (value: "top" | "new" | "best" | "ask" | "show" | "job") - e.g., "show top stories" -> { "action": "navigate:storytype", "value": "top" }
+    - "navigate" (value: "top" | "new" | "best" | "ask" | "show" | "job") - e.g., "show top stories" -> { "action": "navigate", "value": "top" }
     - "pagination" (value: "next" | "prev") - e.g., "next page" -> { "action": "pagination", "value": "next" }
     - "pagination:items" (value: number) - e.g., "show 10 items" -> { "action": "pagination:items", "value": 10 }
     - "search:keyword" (value: string) - e.g., "search for react" -> { "action": "search:keyword", "value": "react" }
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     Example for "Navigate to ask and sort by popularity":
     {
       "actions": [
-        { "action": "navigate:storytype", "value": "ask", "reason_step": "Navigating to Ask HN" },
+        { "action": "navigate", "value": "ask", "reason_step": "Navigating to Ask HN" },
         { "action": "sort:by", "value": "points", "reason_step": "Sorting by popularity" }
       ],
       "reason": "User asked to navigate to Ask HN and sort by popularity"
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     Example for "Show top stories":
     {
       "actions": [
-        { "action": "navigate:storytype", "value": "top", "reason_step": "Navigating to Top Stories" }
+        { "action": "navigate", "value": "top", "reason_step": "Navigating to Top Stories" }
       ],
       "reason": "User asked to show top stories"
     }

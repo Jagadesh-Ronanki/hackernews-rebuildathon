@@ -164,7 +164,7 @@ export function PaginationBar({
           </div>
 
           {/* Mobile Pagination */}
-          <div className="md:hidden flex items-center justify-between w-full">
+          <div className="md:hidden mb-20 flex items-center justify-between w-full">
             <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md bg-orange-50/80 dark:bg-orange-900/10 backdrop-blur-md border border-orange-200/70 dark:border-orange-800/30">
               <button
                 onClick={() => onPageChange(currentPage - 1)}

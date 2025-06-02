@@ -12,7 +12,7 @@ export default function UserLayout({
   const pathname = usePathname()
   
   return (
-    <div className="min-h-screen bg-orange-200/10 backdrop-blur-md text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen backdrop-blur-md text-gray-900 dark:text-gray-100">
       {/* Back button header */}
       <header className="md:sticky top-0 z-10">
         <div className="container mx-auto px-4 py-2">
