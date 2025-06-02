@@ -4,17 +4,20 @@ A modern, AI-powered rebuild of Hacker News with advanced features including voi
 
 ## Screenshots
 
-### Before
-
-
-
-### After
-
+### Rebuilt - Classic Comparision
+![Classic Hacker News Webpage](public/assets/images/Classic.png)
+![Reimagined Hacker News Webpage](public/assets/images/Reimagined.png)
+![Post Comparision](public/assets/images/Post.png)
+![Save To List Feature](public/assets/images/Save.png)
+![Customization Options](public/assets/images/Customize.png)
+![AI chatbot](public/assets/images/Chatbot.png)
+![Control with Speech](public/assets/images/Push%20to%20Speak.png)
 
 
 ## Features
 
-### Voice Control System
+### Voice Control System 
+| Note: Only works in edge browser for time being.
 - **Speech Recognition**: Navigate and control the app using voice commands
 - **Natural Language Processing**: AI-powered command interpretation using Google Gemini
 - **Hands-free Navigation**: Browse stories, filter content, and interact without typing
