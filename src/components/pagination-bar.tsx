@@ -55,7 +55,7 @@ export function PaginationBar({
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
-    <div className="sticky bottom-0 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 sm:relative sm:bg-transparent sm:border-0 sm:z-auto z-40">
+    <div className="sticky bottom-0 border-t border-gray-200 dark:border-gray-800 sm:relative sm:bg-transparent sm:border-0 sm:z-auto z-40">
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-14">
           {/* Desktop Pagination */}
