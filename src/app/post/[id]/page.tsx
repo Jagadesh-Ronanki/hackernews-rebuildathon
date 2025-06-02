@@ -10,6 +10,7 @@ import { LoadingSkeleton, ErrorMessage } from '../../../components/loading'
 import { extractDomain, formatTimeAgo } from '../../../api/utils/helpers'
 import DynamicCommentItem from '../../../components/dynamic-comment-item'
 import LoadMoreTrigger from '../../../components/load-more-trigger'
+import CommentSummary from '../../../components/comment-summary';
 
 export default function StoryPage() {
   const params = useParams()
@@ -87,7 +88,8 @@ export default function StoryPage() {
   
   const domain = story.url ? extractDomain(story.url) : null
   const timeAgo = story.time ? formatTimeAgo(story.time) : ''
-  
+  const commentsForSummary = comments.map(comment => ({ text: comment.text || '' }));
+
   return (
     <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
       
@@ -185,6 +187,11 @@ export default function StoryPage() {
         <h2 className="text-lg sm:text-xl font-semibold text-orange-700 dark:text-orange-400 mb-3 sm:mb-4">
           Comments ({story.descendants || 0})
         </h2>
+
+        {/* Comment Summary Component */}
+        {story.descendants && story.descendants > 0 && (
+          <CommentSummary storyId={storyId} comments={commentsForSummary} />
+        )}
         
         {comments.length === 0 && !isLoading ? (
           <div className="text-center py-6 sm:py-10 border border-orange-200 dark:border-orange-900/30 rounded-lg bg-orange-50/50 dark:bg-orange-900/10">

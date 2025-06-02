@@ -25,6 +25,8 @@ interface VoiceControlContextType {
   isProcessing: boolean
   registerPageActions: (actions: PageActions) => void
   unregisterPageActions: () => void
+  pauseRecognitionForAudio: () => void
+  resumeRecognitionAfterAudio: () => void
 }
 
 const VoiceControlContext = createContext<VoiceControlContextType | undefined>(undefined)
@@ -32,6 +34,7 @@ const VoiceControlContext = createContext<VoiceControlContextType | undefined>(u
 export function VoiceControlProvider({ children }: { children: ReactNode }) {
   const [isListening, setIsListening] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isRecognitionPausedForAudio, setIsRecognitionPausedForAudio] = useState(false)
   const [conversationHistory, setConversationHistory] = useState<string[]>([])
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
@@ -46,6 +49,24 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
 
   const unregisterPageActions = () => {
     pageActionsRef.current = null;
+  };
+
+  const pauseRecognitionForAudio = () => {
+    console.log('Pausing recognition for audio playback');
+    setIsRecognitionPausedForAudio(true);
+    if (recognitionRef.current && isListening) {
+      try {
+        recognitionRef.current.stop();
+        console.log('Speech recognition stopped for audio playback.');
+      } catch (e) {
+        console.error('Error stopping recognition for audio:', e);
+      }
+    }
+  };
+
+  const resumeRecognitionAfterAudio = () => {
+    console.log('Attempting to resume recognition after audio playback');
+    setIsRecognitionPausedForAudio(false);
   };
 
   const processCommand = async (command: string) => {
@@ -81,58 +102,68 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       setFeedback({
         isProcessing: false,
         command,
-        action: data.actions.map((a: any) => a.action).join(', '), // Combine actions for display
+        action: data.actions.map((a: any) => a.action).join(', '),
         reason: data.reason
       })
-      
-      await new Promise(resolve => setTimeout(resolve, 1000))
       
       for (const actionItem of data.actions) {
         const currentAction = actionItem.action;
         const currentValue = actionItem.value;
 
-        // Existing switch cases will be adapted to use currentAction and currentValue
+        console.log('Processing action:', currentAction, 'with value:', currentValue);
         switch (currentAction) {
-          case 'theme:dark':
-            setTheme('dark')
-            break
-          case 'theme:light':
-            setTheme('light')
-            break
-          case 'navigate:home':
-            router.push('/')
-            break
-          case 'navigate:about':
-            router.push('/about')
-            break
-          case 'scroll:top':
-            {
-              const mainScrollable = document.getElementById('main-scrollable-content');
+          case 'theme':
+            if (currentValue === 'dark') {
+              console.log('Condition matched: theme:dark');
+              setTheme('dark');
+              console.log('Executed setTheme(dark)');
+            } else if (currentValue === 'light') {
+              console.log('Condition matched: theme:light');
+              setTheme('light');
+              console.log('Executed setTheme(light)');
+            } else {
+              console.warn(`Unknown theme value: ${currentValue} for action: theme`);
+            }
+            break;
+          case 'navigate':
+            if (currentValue === 'home') {
+              router.push('/');
+            } else if (currentValue === 'about') {
+              router.push('/about');
+            } else if (currentValue === 'back') {
+              router.back();
+            } else if (currentValue === 'forward') {
+              router.forward();
+            } else if (['top', 'new', 'best', 'ask', 'show', 'job'].includes(currentValue)) {
+              router.push(`/?type=${currentValue}`);
+            } else {
+              console.warn(`Unknown navigation value: ${currentValue} for action: navigate`);
+            }
+            break;
+          case 'scroll':
+            if (currentValue === 'top') {
+              const mainScrollable = document.querySelector('#main-scrollable-content');
               if (mainScrollable) {
                 mainScrollable.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                console.error('#main-scrollable-content not found');
               }
-            }
-            break
-          case 'scroll:bottom':
-            {
-              const mainScrollable = document.getElementById('main-scrollable-content');
+            } else if (currentValue === 'bottom') {
+              const mainScrollable = document.querySelector('#main-scrollable-content');
               if (mainScrollable) {
                 mainScrollable.scrollTo({ top: mainScrollable.scrollHeight, behavior: 'smooth' });
+              } else {
+                console.error('#main-scrollable-content not found');
               }
+            } else {
+              console.warn(`Unknown scroll value: ${currentValue} for action: scroll`);
             }
-            break
-          case 'navigate:back':
-            router.back()
-            break
-          case 'navigate:forward':
-            router.forward()
-            break
-          case 'page:refresh':
-            window.location.reload()
-            break
-          case 'navigate:storytype':
-            if (currentValue && ['top', 'new', 'best', 'ask', 'show', 'job'].includes(currentValue)) {
-              router.push(`/?type=${currentValue}`)
+            break;
+          case 'page':
+            if (currentValue === 'refresh') {
+              window.location.reload();
+            } else {
+              console.warn(`Unknown page value: ${currentValue} for action: page`);
             }
             break;
           case 'pagination':
@@ -146,49 +177,94 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
             if (typeof currentValue === 'number' && [10, 20, 30, 50].includes(currentValue)) {
               pageActionsRef.current?.setItemsPerPage?.(currentValue);
             }
-            break
+            break;
           case 'search:keyword':
             if (typeof currentValue === 'string' && currentValue) {
               pageActionsRef.current?.searchByKeyword?.(currentValue);
             }
-            break
+            break;
           case 'sort:by':
             if (currentValue && ['default', 'points', 'comments', 'newest', 'oldest'].includes(currentValue)) {
               pageActionsRef.current?.sortByPreference?.(currentValue as 'default' | 'points' | 'comments' | 'newest' | 'oldest');
             }
-            break
+            break;
           case 'filter:domain':
             if (typeof currentValue === 'string' && currentValue) {
               pageActionsRef.current?.setDomainFilter?.(currentValue);
             }
-            break
+            break;
           case 'filter:domain:clear':
             pageActionsRef.current?.clearDomainFilter?.();
-            break
+            break;
           case 'filter:keyword:clear':
             pageActionsRef.current?.clearKeywordFilter?.();
-            break
+            break;
           case 'viewmode':
             if (currentValue && ['normal', 'compact', 'card'].includes(currentValue)) {
               pageActionsRef.current?.setViewMode?.(currentValue as 'normal' | 'compact' | 'card');
             }
-            break
+            break;
           case 'fontsize':
             if (currentValue && ['small', 'normal', 'large'].includes(currentValue)) {
               pageActionsRef.current?.setFontSize?.(currentValue as 'small' | 'normal' | 'large');
             }
-            break
+            break;
           case 'filter:clearall':
             pageActionsRef.current?.clearAllFilters?.();
-            break
+            break;
+          case 'summarize':
+            console.log(`Condition matched: summarize, value: ${currentValue}`);
+            if (currentValue === 'page') {
+              const mainContentElement = document.querySelector('#main-scrollable-content') || document.body;
+              const pageText = (mainContentElement as HTMLElement).innerText;
+              
+              console.log('Attempting to summarize page content.');
+              try {
+                const response = await fetch('/api/summarize', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ pageContent: pageText }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                  console.log('Page summary:', data.summary);
+                  setFeedback({
+                    isProcessing: false,
+                    command,
+                    action: 'summarize:page',
+                    reason: data.summary,
+                    isSummary: true
+                  });
+                } else {
+                  console.error('Failed to summarize page:', data.error);
+                  setFeedback({
+                    isProcessing: false,
+                    command,
+                    action: 'summarize:page',
+                    reason: `Failed to summarize: ${data.error}`,
+                    isSummary: false
+                  }, 5000);
+                }
+              } catch (error) {
+                console.error('Error calling summarize API:', error);
+                setFeedback({
+                  isProcessing: false,
+                  command,
+                  action: 'summarize:page',
+                  reason: 'Error calling summarize API.',
+                  isSummary: false
+                }, 5000);
+              }
+            } else {
+              console.warn(`Unknown summarize value: ${currentValue} for action: summarize`);
+            }
+            break;
           case 'none':
           default:
-            // No operation for "none" or unknown actions in a sequence
             break;
         }
-        // Add a small delay between actions if needed, e.g., for navigation to complete
         if (data.actions.length > 1 && actionItem !== data.actions[data.actions.length - 1]) {
-          await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second delay
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
     } catch (error) {
@@ -218,7 +294,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
     recognition.lang = 'en-US'
     
     recognition.onend = () => {
-      if (isListening && recognitionRef.current) {
+      if (isListening && recognitionRef.current && !isRecognitionPausedForAudio) {
         try {
           recognitionRef.current.start()
         } catch (e) {
@@ -239,7 +315,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       console.error('Speech recognition error:', event.error)
       
       if (event.error === 'no-speech' || event.error === 'audio-capture') {
-        if (isListening && recognitionRef.current) {
+        if (isListening && recognitionRef.current && !isRecognitionPausedForAudio) {
           setTimeout(() => {
             try {
               recognitionRef.current.start()
@@ -261,21 +337,35 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
         recognitionRef.current.stop()
       }
     }
-  }, [theme, pathname, conversationHistory, isListening, isProcessing])
+  }, [theme, pathname, conversationHistory, isListening, isProcessing, isRecognitionPausedForAudio])
 
   useEffect(() => {
     if (recognitionRef.current) {
-      if (isListening) {
+      if (isListening && !isRecognitionPausedForAudio) {
         try {
           recognitionRef.current.start()
+          console.log('Speech recognition started.');
         } catch (e) {
-          console.log('Start error:', e)
+          if (e instanceof DOMException && e.name === 'InvalidStateError') {
+            console.warn('Speech recognition already started.');
+          } else {
+            console.error('Error starting speech recognition:', e);
+          }
         }
       } else {
-        recognitionRef.current.stop()
+        try {
+          recognitionRef.current.stop()
+          console.log('Speech recognition stopped (isListening or isRecognitionPausedForAudio changed).');
+        } catch (e) {
+          if (e instanceof DOMException && e.name === 'InvalidStateError') {
+            console.warn('Speech recognition already stopped.');
+          } else {
+            console.error('Error stopping speech recognition:', e);
+          }
+        }
       }
     }
-  }, [isListening])
+  }, [isListening, isRecognitionPausedForAudio])
 
   return (
     <VoiceControlContext.Provider value={{ 
@@ -283,7 +373,9 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       setIsListening, 
       isProcessing, 
       registerPageActions, 
-      unregisterPageActions 
+      unregisterPageActions,
+      pauseRecognitionForAudio,
+      resumeRecognitionAfterAudio
     }}>
       {children}
     </VoiceControlContext.Provider>

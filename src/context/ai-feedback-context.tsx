@@ -7,30 +7,56 @@ interface AIFeedback {
   command: string
   action: string
   reason: string
+  isSummary?: boolean // Added isSummary flag
 }
 
 interface AIFeedbackContextType {
   feedback: AIFeedback
-  setFeedback: (feedback: AIFeedback) => void
+  setFeedback: (feedback: AIFeedback, duration?: number) => void
   clearFeedback: () => void
 }
 
 const AIFeedbackContext = createContext<AIFeedbackContextType | undefined>(undefined)
 
 export function AIFeedbackProvider({ children }: { children: ReactNode }) {
-  const [feedback, setFeedback] = useState<AIFeedback>({
+  const [feedback, _setFeedback] = useState<AIFeedback>({
     isProcessing: false,
     command: '',
     action: '',
-    reason: ''
+    reason: '',
+    isSummary: false // Initialize isSummary
   })
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+
+  const setFeedback = (newFeedback: AIFeedback, duration?: number) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    _setFeedback(newFeedback);
+    // Only set a timeout if it's not a summary and a duration is provided
+    if (!newFeedback.isSummary && duration) {
+      const newTimeoutId = setTimeout(() => {
+        clearFeedback();
+      }, duration);
+      setTimeoutId(newTimeoutId);
+    } else if (newFeedback.isSummary && timeoutId) {
+      // If it is a summary, clear any existing timeout to make it persistent
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+  };
 
   const clearFeedback = () => {
-    setFeedback({
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+    _setFeedback({
       isProcessing: false,
       command: '',
       action: '',
-      reason: ''
+      reason: '',
+      isSummary: false // Reset isSummary on clear
     })
   }
 

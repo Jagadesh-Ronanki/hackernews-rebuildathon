@@ -136,7 +136,7 @@ export function PaginationBar({
                 {/* Dropdown */}
                 {isDropdownOpen && (
                   <div 
-                    className="absolute bottom-full right-0 mb-2 py-1 bg-orange-200/10 backdrop-blur-md border border-orange-200 dark:border-orange-800 rounded-md shadow-lg shadow-orange-500/10 z-50"
+                    className="absolute bottom-full right-0 mb-2 py-1 bg-orange-100 backdrop-blur-md border border-orange-200 dark:border-orange-800 rounded-md shadow-lg shadow-orange-500/10 z-50"
                     role="listbox"
                   >
                     {itemsPerPageOptions.map((option) => (

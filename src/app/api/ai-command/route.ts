@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     - "navigate" (value: "home" | "about" | "back" | "forward") - e.g., "go to home page" -> { "action": "navigate", "value": "home" }
     - "scroll" (value: "top" | "bottom") - e.g., "scroll to top" -> { "action": "scroll", "value": "top" }
     - "page" (value: "refresh") - e.g., "refresh page" -> { "action": "page", "value": "refresh" }
+    - "summarize" (value: "page") - e.g., "summarize page" -> { "action": "summarize", "value": "page" }
     - "navigate:storytype" (value: "top" | "new" | "best" | "ask" | "show" | "job") - e.g., "show top stories" -> { "action": "navigate:storytype", "value": "top" }
     - "pagination" (value: "next" | "prev") - e.g., "next page" -> { "action": "pagination", "value": "next" }
     - "pagination:items" (value: number) - e.g., "show 10 items" -> { "action": "pagination:items", "value": 10 }
