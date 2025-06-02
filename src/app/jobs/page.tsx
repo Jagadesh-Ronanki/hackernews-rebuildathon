@@ -102,20 +102,20 @@ export default function JobsPage() {
             {!isLoading && !error && visibleStories.length > 0 && (
               <div 
                 className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800"
-                key={`stories-jobs-${currentPage}`} // Force remount on page change for animation
+                key={`stories-jobs-${currentPage}`}
               >
                 {visibleStories.map((story, index) => (
                   <StoryItem
                     key={story.id}
                     story={story}
                     index={index + ((currentPage - 1) * itemsPerPage)}
-                    isUpvoted={false} // Jobs don't have upvotes
+                    isUpvoted={false}
                     isSaved={savedPosts.has(story.id)}
-                    onUpvote={() => {}} // No-op for jobs
+                    onUpvote={() => {}}
                     onSave={handleSave}
                     onHide={handleHide}
                     isMobile={isMobile}
-                    disableVoting={true} // Disable voting UI for jobs
+                    disableVoting={true} 
                   />
                 ))}
               </div>

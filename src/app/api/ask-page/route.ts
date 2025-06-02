@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest", // Using a model that supports chat history well
+      model: "gemini-1.5-flash-latest",
       generationConfig,
       safetySettings,
     });
@@ -70,9 +70,7 @@ export async function POST(request: Request) {
 
     Prioritize answering based on the page content if relevant. However, if the question is a specific request for a link to a user profile or an item page within this application, and you can form a valid internal link as per the formats above, please provide it.`;
 
-    // Start a chat session. If history is provided, use it.
     // The history format from the client is { role: 'user' | 'model', parts: [{ text: string }] }
-    // The ChatSession history needs to be compatible with this.
     const chat: ChatSession = model.startChat({
         generationConfig,
         safetySettings,

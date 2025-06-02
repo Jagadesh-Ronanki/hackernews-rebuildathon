@@ -9,7 +9,7 @@ import { Story } from '@/api'
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
-  const query = searchParams.get('q') || ''
+  const query = searchParams?.get('q') || ''
   const [isMobile, setIsMobile] = useState(false)
 
   const { 
@@ -91,7 +91,7 @@ export default function SearchPage() {
         {!isLoading && !error && searchResults.length > 0 && (
           <div 
             className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800"
-            key={`search-results-${query}`} // Force remount on query change for animation
+            key={`search-results-${query}`}
           >
             {searchResults
             .filter((item): item is Story => item.type === 'story')

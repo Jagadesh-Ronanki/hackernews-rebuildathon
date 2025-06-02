@@ -81,7 +81,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
       setFeedback({
         isProcessing: false,
         command,
-        action: data.actions.map((a: any) => a.action).join(', '), // Combine actions for display
+        action: data.actions.map((a: any) => a.action).join(', '),
         reason: data.reason
       })
       
@@ -212,8 +212,8 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
                     isProcessing: false,
                     command,
                     action: 'summarize:page',
-                    reason: data.summary, // Display summary in the reason field
-                    isSummary: true // Mark as summary
+                    reason: data.summary,
+                    isSummary: true
                   });
                   // Speech synthesis will be handled by the overlay
                 } else {
@@ -245,7 +245,7 @@ export function VoiceControlProvider({ children }: { children: ReactNode }) {
             break;
         }
         if (data.actions.length > 1 && actionItem !== data.actions[data.actions.length - 1]) {
-          await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second delay
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
     } catch (error) {

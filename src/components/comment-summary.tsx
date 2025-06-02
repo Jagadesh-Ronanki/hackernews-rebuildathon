@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 
 interface CommentSummaryProps {
     storyId: number;
-    comments: { text?: string }[]; // Assuming comments have a text property
+    comments: { text?: string }[];
 }
 
 const CommentSummary: React.FC<CommentSummaryProps> = ({ storyId, comments }) => {
@@ -48,7 +48,7 @@ const CommentSummary: React.FC<CommentSummaryProps> = ({ storyId, comments }) =>
             setShowSummary(true);
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
-            setShowSummary(false); // Don't show summary box if there was an error fetching
+            setShowSummary(false);
         } finally {
             setIsLoading(false);
         }

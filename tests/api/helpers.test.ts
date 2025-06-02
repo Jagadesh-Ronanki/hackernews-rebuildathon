@@ -47,11 +47,9 @@ describe('API utility functions', () => {
   
   describe('formatDate', () => {
     it('should format date correctly', () => {
-      // May 1, 2023, 12:00:00 UTC
       const timestamp = 1682956800;
       const result = helpers.formatDate(timestamp);
       
-      // Format might differ based on locale, so checking for parts
       expect(result).toContain('2023');
       expect(result).toContain('May');
       expect(result).toContain('1');

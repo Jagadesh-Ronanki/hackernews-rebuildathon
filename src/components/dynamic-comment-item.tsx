@@ -25,7 +25,7 @@ export default function CommentItem({
   
   const timeAgo = comment.time ? formatTimeAgo(comment.time) : '';
   const hasChildren = comment.kids && comment.kids.length > 0;
-  const maxDepth = 5; // Max indentation level
+  const maxDepth = 5;
   const currentDepth = Math.min(depth, maxDepth);
   
   // Use tailwind classes for padding based on depth

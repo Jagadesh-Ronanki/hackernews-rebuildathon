@@ -7,7 +7,7 @@ interface AIFeedback {
   command: string
   action: string
   reason: string
-  isSummary?: boolean // Added isSummary flag
+  isSummary?: boolean
 }
 
 interface AIFeedbackContextType {
@@ -56,7 +56,7 @@ export function AIFeedbackProvider({ children }: { children: ReactNode }) {
       command: '',
       action: '',
       reason: '',
-      isSummary: false // Reset isSummary on clear
+      isSummary: false
     })
   }
 

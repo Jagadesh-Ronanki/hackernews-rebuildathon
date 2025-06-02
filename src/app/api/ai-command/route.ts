@@ -7,7 +7,6 @@ export async function POST(request: Request) {
   try {
     const { command, context } = await request.json()
     
-    // Using gemini-1.5-flash for fast voice assistant responses
     const model = genAI.getGenerativeModel({ 
       model: 'gemini-1.5-flash',
       generationConfig: {

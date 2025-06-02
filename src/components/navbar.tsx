@@ -61,7 +61,6 @@ export function Navbar() {
                                 | <span className="hover:text-orange-500 transition-colors">🧡</span>
                                 {/* Container for flying hearts - hidden by default, shown on hover */}
                                 <div className="absolute -top-2 left-1/2 -translate-x-1/2 hidden group-hover:block pointer-events-none">
-                                    {/* Multiple heart elements for staggered animation */}
                                     {[...Array(5)].map((_, i) => (
                                         <span 
                                             key={i} 

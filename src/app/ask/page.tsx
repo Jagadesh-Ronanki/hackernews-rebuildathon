@@ -14,7 +14,6 @@ export default function AskPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [isMobile, setIsMobile] = useState(false)
 
-  // Use the stories hook with type set to 'ask'
   const { 
     stories, 
     isLoading, 
@@ -22,7 +21,7 @@ export default function AskPage() {
     totalStories, 
     refetch 
   } = useStories({
-    type: 'ask', // Specifically load Ask HN stories
+    type: 'ask',
     limit: 50,
     page: currentPage,
     itemsPerPage
@@ -114,7 +113,7 @@ export default function AskPage() {
             {!isLoading && !error && visibleStories.length > 0 && (
               <div 
                 className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800"
-                key={`stories-ask-${currentPage}`} // Force remount on page change for animation
+                key={`stories-ask-${currentPage}`} 
               >
                 {visibleStories.map((story, index) => (
                   <StoryItem

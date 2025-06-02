@@ -21,7 +21,7 @@ export function AIFeedbackOverlay() {
     if (feedback.action && !feedback.isProcessing && !feedback.isSummary) {
       const timer = setTimeout(() => {
         clearFeedback()
-      }, 3000) // Default 3s for non-summary, non-processing feedback
+      }, 3000)
       return () => clearTimeout(timer)
     }
   }, [feedback, clearFeedback])
@@ -41,7 +41,6 @@ export function AIFeedbackOverlay() {
         setIsPlaying(false);
       };
       utteranceRef.current = newUtterance;
-      // Do not auto-play, let user click play
       setIsPlaying(false); 
     } else {
       // If not a summary or no reason, ensure no utterance is active
@@ -129,7 +128,7 @@ export function AIFeedbackOverlay() {
                 {getActionText(feedback.action)}
               </h3>
               {feedback.isSummary && (
-                <div className="flex items-center gap-1"> {/* Button group for summary controls */}
+                <div className="flex items-center gap-1">
                   <Button 
                     variant="ghost" 
                     size="icon" 
@@ -153,7 +152,7 @@ export function AIFeedbackOverlay() {
             </div>
             
             {feedback.isSummary ? (
-              <div className={`space-y-4 ${isSummaryFullScreen ? 'flex-grow flex flex-col min-h-0' : ''}`}> {/* Added min-h-0 for flex-grow in Safari */}
+              <div className={`space-y-4 ${isSummaryFullScreen ? 'flex-grow flex flex-col min-h-0' : ''}`}>
                 <div className={` ${isSummaryFullScreen ? 'flex-grow overflow-y-auto min-h-0' : 'max-h-60 overflow-y-auto'} p-3 bg-white/50 dark:bg-black/20 rounded-md border border-orange-200/30 dark:border-orange-800/30 scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-orange-200/50`}>
                   <p className="text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap">
                     {feedback.reason}

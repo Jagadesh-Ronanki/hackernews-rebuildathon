@@ -33,7 +33,7 @@ const AskPageWidget: React.FC = () => {
     if (isOpen) {
       const mainContentElement = document.getElementById('main-scrollable-content');
       const content = mainContentElement ? mainContentElement.innerText : document.body.innerText;
-      setPageContent(content.substring(0, 15000)); // Limit content length
+      setPageContent(content.substring(0, 15000));
       const textarea = widgetRef.current?.querySelector('textarea');
       textarea?.focus();
     } else {

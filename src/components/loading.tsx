@@ -10,17 +10,12 @@ export function LoadingSkeleton() {
           style={{ animationDelay: `${i * 100}ms` }}
         >
           <div className="flex items-start space-x-2 sm:space-x-3 flex-1 min-w-0 px-1 sm:px-2">
-            {/* Post Number Skeleton */}
             <div className="hidden md:block w-4 h-4 bg-orange-200 dark:bg-orange-900/30 rounded"></div>
             
-            {/* Content Section Skeleton */}
             <div className="flex-1 space-y-2">
-              {/* Title Skeleton */}
               <div className="h-4 sm:h-5 bg-orange-200 dark:bg-orange-900/30 rounded-md w-3/4"></div>
               
-              {/* Meta Information Skeleton */}
               <div className="flex flex-wrap gap-1 sm:gap-2">
-                {/* Story Type Tag (for Ask/Show HN) */}
                 {(i % 5 === 0 || i % 7 === 0) && (
                   <div className="h-3 sm:h-4 bg-orange-200 dark:bg-orange-900/30 rounded w-12 sm:w-14"></div>
                 )}

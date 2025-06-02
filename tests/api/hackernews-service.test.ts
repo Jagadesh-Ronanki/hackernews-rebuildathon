@@ -2,7 +2,6 @@ import { HackerNewsService } from '../../src/api/services/hackernews-service';
 import { HackerNewsAPIClient } from '../../src/api/services/hackernews-api';
 import { Story, Comment, User } from '../../src/api/types/hackernews';
 
-// Create a mock for the HackerNewsAPIClient
 jest.mock('../../src/api/services/hackernews-api');
 
 describe('HackerNewsService', () => {
@@ -10,10 +9,7 @@ describe('HackerNewsService', () => {
   let mockApiClient: jest.Mocked<HackerNewsAPIClient>;
 
   beforeEach(() => {
-    // Clear all mocks
     jest.clearAllMocks();
-    
-    // Create a fresh mock instance for each test
     mockApiClient = new HackerNewsAPIClient() as jest.Mocked<HackerNewsAPIClient>;
     
     // Initialize service with mock API client
@@ -88,7 +84,6 @@ describe('HackerNewsService', () => {
         title: 'Test Story',
         by: 'testuser',
         time: 1234567890,
-        // No kids property
       };
 
       // Setup mocks
@@ -291,6 +286,4 @@ describe('HackerNewsService', () => {
       expect(mockApiClient.getUser).toHaveBeenCalledWith('testuser');
     });
   });
-
-  // Add more test cases for other methods...
 });

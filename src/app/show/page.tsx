@@ -22,7 +22,7 @@ export default function ShowPage() {
     totalStories, 
     refetch 
   } = useStories({
-    type: 'show', // Specifically load Show HN stories
+    type: 'show',
     limit: 50,
     page: currentPage,
     itemsPerPage
@@ -114,7 +114,7 @@ export default function ShowPage() {
             {!isLoading && !error && visibleStories.length > 0 && (
               <div 
                 className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800"
-                key={`stories-show-${currentPage}`} // Force remount on page change for animation
+                key={`stories-show-${currentPage}`}
               >
                 {visibleStories.map((story, index) => (
                   <StoryItem
