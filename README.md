@@ -1,7 +1,7 @@
 # Hacker News - Rapid Rebuildathon
 
-Try Live: https://hackernews-rebuildathon.vercel.app/
-| Note: Voice controls only works in edge browser for time being.
+Try Live: https://hackernews-rebuildathon.vercel.app/    
+**Note:** Voice controls only works in edge browser for time being.
 
 A modern, AI-powered rebuild of Hacker News with advanced features including voice control, intelligent summarization, and contextual Q&A capabilities. Built with Next.js 15, TypeScript, and AI integration.
 
