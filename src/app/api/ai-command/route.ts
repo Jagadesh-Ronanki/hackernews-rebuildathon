@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const { command, context } = await request.json()
     
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash-preview-04-17',
       generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 150,
